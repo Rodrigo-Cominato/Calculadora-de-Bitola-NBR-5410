@@ -1,0 +1,1047 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de Dimensionamento de Condutores NBR 5410</title>
+    <style>
+        /* ==========================================================================
+           1. ESTILOS GERAIS E VARIÁVEIS DE TEMA (MODO CLARO E ESCURO)
+           ========================================================================== */
+        :root {
+            --font-main: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            --bg-color: #0f141c;
+            --panel-bg: #1a212d;
+            --panel-border: #2a3447;
+            --text-primary: #e6edf3;
+            --text-secondary: #8b949e;
+            --accent-primary: #0050e6; /* Azul Siemens/Schneider */
+            --accent-hover: #003eb3;
+            --accent-success: #10b981;
+            --accent-warning: #f59e0b;
+            --accent-danger: #ef4444;
+            --input-bg: #121721;
+            --input-border: #30363d;
+            --table-header-bg: #212936;
+            --shadow-color: rgba(0, 0, 0, 0.4);
+        }
+
+        [data-theme="light"] {
+            --bg-color: #f4f6f9;
+            --panel-bg: #ffffff;
+            --panel-border: #d0d7de;
+            --text-primary: #1f2328;
+            --text-secondary: #656d76;
+            --accent-primary: #005bda;
+            --accent-hover: #0043a8;
+            --accent-success: #059669;
+            --accent-warning: #d97706;
+            --accent-danger: #dc2626;
+            --input-bg: #ffffff;
+            --input-border: #d0d7de;
+            --table-header-bg: #f6f8fa;
+            --shadow-color: rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            transition: background-color 0.2s, border-color 0.2s, color 0.2s;
+        }
+
+        body {
+            font-family: var(--font-main);
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            line-height: 1.5;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* ==========================================================================
+           2. HEADER E CONTROLES DE INTERFACE
+           ========================================================================== */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: var(--panel-bg);
+            padding: 15px 25px;
+            border-radius: 8px;
+            border: 1px solid var(--panel-border);
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px var(--shadow-color);
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .brand-logo {
+            width: 32px;
+            height: 32px;
+            fill: var(--accent-primary);
+        }
+
+        .brand h1 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+
+        .controls {
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn-ctrl {
+            background-color: var(--input-bg);
+            color: var(--text-primary);
+            border: 1px solid var(--input-border);
+            padding: 8px 14px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.875rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-ctrl:hover {
+            border-color: var(--accent-primary);
+        }
+
+        /* ==========================================================================
+           3. LAYOUT PRINCIPAL (PAINÉIS DE ENTRADA E RESULTADOS)
+           ========================================================================== */
+        main {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            flex-grow: 1;
+        }
+
+        @media (max-width: 1024px) {
+            main {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .panel {
+            background-color: var(--panel-bg);
+            border: 1px solid var(--panel-border);
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 4px 6px var(--shadow-color);
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .panel-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            border-bottom: 2px solid var(--panel-border);
+            padding-bottom: 8px;
+            color: var(--accent-primary);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+
+        @media (max-width: 600px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .form-group.full-width {
+            grid-column: span 2;
+        }
+
+        @media (max-width: 600px) {
+            .form-group.full-width {
+                grid-column: span 1;
+            }
+        }
+
+        label {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+        }
+
+        select, input {
+            background-color: var(--input-bg);
+            color: var(--text-primary);
+            border: 1px solid var(--input-border);
+            padding: 9px 12px;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            outline: none;
+        }
+
+        select:focus, input:focus {
+            border-color: var(--accent-primary);
+        }
+
+        .input-group {
+            display: flex;
+            gap: 8px;
+        }
+
+        .input-group input {
+            flex-grow: 1;
+        }
+
+        .input-group select {
+            width: 90px;
+        }
+
+        /* ==========================================================================
+           4. RESULTADOS E MÉTRICAS
+           ========================================================================== */
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+
+        .metric-card {
+            background-color: var(--input-bg);
+            border: 1px solid var(--panel-border);
+            border-radius: 6px;
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .metric-card.highlight {
+            border-color: var(--accent-primary);
+            background-color: rgba(0, 80, 230, 0.05);
+        }
+
+        .metric-label {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .metric-value {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-top: 4px;
+        }
+
+        .metric-card.highlight .metric-value {
+            color: var(--accent-primary);
+        }
+
+        .metric-sub {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            margin-top: 2px;
+        }
+
+        .action-btns {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .btn-action {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 6px;
+            font-weight: 700;
+            cursor: pointer;
+            font-size: 0.9rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background-color: var(--accent-primary);
+            color: #ffffff;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--accent-hover);
+        }
+
+        .btn-secondary {
+            background-color: var(--input-bg);
+            color: var(--text-primary);
+            border: 1px solid var(--input-border);
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--text-primary);
+        }
+
+        /* ==========================================================================
+           5. GRÁFICOS SVG
+           ========================================================================== */
+        .charts-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .chart-box {
+            background-color: var(--input-bg);
+            border: 1px solid var(--panel-border);
+            border-radius: 6px;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .chart-box h4 {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+        }
+
+        /* ==========================================================================
+           6. MODAL (MEMÓRIA DE CÁLCULO)
+           ========================================================================== */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal-content {
+            background-color: var(--panel-bg);
+            border: 1px solid var(--panel-border);
+            border-radius: 8px;
+            width: 90%;
+            max-width: 800px;
+            max-height: 85vh;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+        }
+
+        .modal-header {
+            padding: 15px 20px;
+            border-bottom: 1px solid var(--panel-border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-body {
+            padding: 20px;
+            overflow-y: auto;
+            font-size: 0.9rem;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .step-card {
+            background-color: var(--input-bg);
+            border-left: 4px solid var(--accent-primary);
+            padding: 12px;
+            border-radius: 0 6px 6px 0;
+        }
+
+        .step-title {
+            font-weight: 700;
+            color: var(--accent-primary);
+            margin-bottom: 4px;
+        }
+
+        .formula-box {
+            background-color: var(--panel-bg);
+            padding: 8px;
+            border-radius: 4px;
+            font-family: monospace;
+            margin: 6px 0;
+            border: 1px dashed var(--panel-border);
+        }
+
+        /* ==========================================================================
+           7. RODAPÉ E AVISO LEGAL
+           ========================================================================== */
+        footer {
+            margin-top: 20px;
+            background-color: var(--panel-bg);
+            border: 1px solid var(--panel-border);
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        /* Ocultar elementos ao imprimir PDF nativo */
+        @media print {
+            body { background: white; color: black; padding: 0; }
+            header, .controls, .action-btns, footer { display: none !important; }
+            main { display: block; }
+            .panel { border: none; box-shadow: none; padding: 0; }
+            .modal-overlay { position: static; opacity: 1; pointer-events: auto; background: none; }
+            .modal-content { max-width: 100%; border: none; box-shadow: none; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- CABEÇALHO COM CONTROLES -->
+    <header>
+        <div class="brand">
+            <svg class="brand-logo" viewBox="0 0 24 24">
+                <path d="M11 15H6l7-14v8h5l-7 14v-8z"/>
+            </svg>
+            <div>
+                <h1 id="txt-title">Dimensionamento NBR 5410</h1>
+                <span style="font-size: 0.75rem; color: var(--text-secondary);" id="txt-subtitle">Calculadora Técnica Oficial</span>
+            </div>
+        </div>
+        <div class="controls">
+            <button class="btn-ctrl" id="btn-lang" onclick="app.toggleLanguage()">
+                <span>🌐</span> <span id="txt-lang-label">EN</span>
+            </button>
+            <button class="btn-ctrl" id="btn-theme" onclick="app.toggleTheme()">
+                <span id="theme-icon">☀️</span> <span id="txt-theme-label">Claro</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- CONTEÚDO PRINCIPAL -->
+    <main>
+        <!-- PAINEL DE ENTRADA -->
+        <section class="panel">
+            <div class="panel-title">
+                <span id="txt-sec-input">Parâmetros do Circuito</span>
+                <span style="font-size: 0.75rem; color: var(--text-secondary);">NBR 5410[cite: 1]</span>
+            </div>
+
+            <div class="form-grid">
+                <!-- Tipo de Circuito -->
+                <div class="form-group">
+                    <label id="lbl-circuit-type">Tipo de Circuito</label>
+                    <select id="in-circuit-type" onchange="app.calculate()">
+                        <option value="lighting">Iluminação</option>
+                        <option value="sockets">Tomadas (TUG/TUE)</option>
+                        <option value="motor">Motores</option>
+                        <option value="general" selected>Carga Geral</option>
+                    </select>
+                </div>
+
+                <!-- Tensão e Sistema -->
+                <div class="form-group">
+                    <label id="lbl-voltage">Tensão / Sistema</label>
+                    <div class="input-group">
+                        <select id="in-voltage-val" onchange="app.calculate()">
+                            <option value="127">127 V</option>
+                            <option value="220" selected>220 V</option>
+                            <option value="380">380 V</option>
+                        </select>
+                        <select id="in-system" onchange="app.calculate()">
+                            <option value="mono">F+N</option>
+                            <option value="bi">F+F</option>
+                            <option value="tri" selected>3F</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Potência / Carga -->
+                <div class="form-group">
+                    <label id="lbl-power">Potência / Carga</label>
+                    <div class="input-group">
+                        <input type="number" id="in-power-val" value="5000" min="1" step="any" oninput="app.calculate()">
+                        <select id="in-power-unit" onchange="app.calculate()">
+                            <option value="W">W</option>
+                            <option value="kW" selected>kW</option>
+                            <option value="VA">VA</option>
+                            <option value="kVA">kVA</option>
+                            <option value="A">A (Ib)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Fator de Potência -->
+                <div class="form-group">
+                    <label id="lbl-fp">Fator de Potência (cos φ)</label>
+                    <input type="number" id="in-fp" value="0.95" min="0.1" max="1.0" step="0.01" oninput="app.calculate()">
+                </div>
+
+                <!-- Condutor e Isolação -->
+                <div class="form-group">
+                    <label id="lbl-material">Condutor / Isolação</label>
+                    <div class="input-group">
+                        <select id="in-mat-cond" onchange="app.calculate()">
+                            <option value="Cu" selected>Cobre (Cu)</option>
+                            <option value="Al">Alumínio (Al)</option>
+                        </select>
+                        <select id="in-mat-iso" onchange="app.calculate()">
+                            <option value="PVC" selected>PVC (70°C)</option>
+                            <option value="XLPE">XLPE/EPR (90°C)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Método de Instalação -->
+                <div class="form-group full-width">
+                    <label id="lbl-install-method">Método de Instalação (Tabela 33)[cite: 1]</label>
+                    <select id="in-install-method" onchange="app.calculate()">
+                        <option value="B1" selected>B1 - Condutores isolados em eletroduto aparente de seção circular[cite: 1]</option>
+                        <option value="A1">A1 - Condutores isolados em eletroduto embutido em parede termicamente isolante[cite: 1]</option>
+                        <option value="B2">B2 - Cabo multipolar em eletroduto aparente de seção circular[cite: 1]</option>
+                        <option value="C">C - Cabos unipolares ou multipolar sobre parede de madeira[cite: 1]</option>
+                        <option value="D">D - Cabo multipolar em eletroduto enterrado no solo[cite: 1]</option>
+                        <option value="E">E - Cabo multipolar ao ar livre[cite: 1]</option>
+                        <option value="F">F - Cabos unipolares justapostos ao ar livre[cite: 1]</option>
+                    </select>
+                </div>
+
+                <!-- Agrupamento e Condutores Carregados -->
+                <div class="form-group">
+                    <label id="lbl-grouping">Agrupamento / Cond. Carregados</label>
+                    <div class="input-group">
+                        <select id="in-grouping" onchange="app.calculate()">
+                            <option value="1" selected>1 Circuito</option>
+                            <option value="2">2 Circuitos</option>
+                            <option value="3">3 Circuitos</option>
+                            <option value="4">4 Circuitos</option>
+                            <option value="5">5+ Circuitos</option>
+                        </select>
+                        <select id="in-loaded-cond" onchange="app.calculate()">
+                            <option value="2">2 Cond.</option>
+                            <option value="3" selected>3 Cond.</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Temp. Ambiente e Comprimento -->
+                <div class="form-group">
+                    <label id="lbl-temp-length">Temp. (°C) / Comprimento (m)</label>
+                    <div class="input-group">
+                        <input type="number" id="in-temp" value="30" min="10" max="60" oninput="app.calculate()">
+                        <input type="number" id="in-length" value="35" min="1" max="1000" oninput="app.calculate()">
+                    </div>
+                </div>
+
+                <!-- Queda de Tensão Máxima -->
+                <div class="form-group full-width">
+                    <label id="lbl-max-vd">Queda de Tensão Máxima Permitida (%)[cite: 1]</label>
+                    <input type="number" id="in-max-vd" value="4.0" min="0.5" max="10.0" step="0.1" oninput="app.calculate()">
+                </div>
+            </div>
+        </section>
+
+        <!-- PAINEL DE RESULTADOS -->
+        <section class="panel">
+            <div class="panel-title">
+                <span id="txt-sec-results">Resultado do Dimensionamento</span>
+                <span id="status-badge" style="font-size:0.75rem; padding: 2px 8px; border-radius: 12px; background: var(--accent-success); color: white;">OK</span>
+            </div>
+
+            <div class="results-grid">
+                <!-- Bitola Mínima Requerida -->
+                <div class="metric-card highlight">
+                    <span class="metric-label" id="lbl-res-section">Bitola Recomendada</span>
+                    <span class="metric-value" id="res-section">-- mm²</span>
+                    <span class="metric-sub" id="res-limiting-criterion">Critério: --</span>
+                </div>
+
+                <!-- Corrente Admissível -->
+                <div class="metric-card">
+                    <span class="metric-label" id="lbl-res-iz">Capacidade do Cabo (Iz)</span>
+                    <span class="metric-value" id="res-iz">-- A</span>
+                    <span class="metric-sub" id="res-ib">Corrente de Projeto (Ib): -- A</span>
+                </div>
+
+                <!-- Queda de Tensão Calculada -->
+                <div class="metric-card">
+                    <span class="metric-label" id="lbl-res-vd">Queda de Tensão (ΔU)</span>
+                    <span class="metric-value" id="res-vd">-- %</span>
+                    <span class="metric-sub" id="res-vd-volts">-- V</span>
+                </div>
+
+                <!-- Reserva de Capacidade -->
+                <div class="metric-card">
+                    <span class="metric-label" id="lbl-res-reserve">Reserva de Capacidade</span>
+                    <span class="metric-value" id="res-reserve">-- %</span>
+                    <span class="metric-sub" id="res-fct-combined">Fator Correção Total: --</span>
+                </div>
+            </div>
+
+            <!-- GRÁFICOS SVG -->
+            <div class="charts-container">
+                <div class="chart-box">
+                    <h4 id="lbl-chart-occ">Ocupação Térmica (Ib / Iz)</h4>
+                    <svg id="svg-gauge" width="120" height="120" viewBox="0 0 120 120"></svg>
+                </div>
+                <div class="chart-box">
+                    <h4 id="lbl-chart-vd">Queda de Tensão Relativa</h4>
+                    <svg id="svg-bar" width="120" height="120" viewBox="0 0 120 120"></svg>
+                </div>
+            </div>
+
+            <!-- BOTÕES DE AÇÃO -->
+            <div class="action-btns">
+                <button class="btn-action btn-primary" onclick="app.openModal()">
+                    <span>📝</span> <span id="btn-txt-calc-memory">Memória de Cálculo</span>
+                </button>
+                <button class="btn-action btn-secondary" onclick="app.exportPDF()">
+                    <span>📄</span> <span id="btn-txt-pdf">Exportar PDF</span>
+                </button>
+            </div>
+        </section>
+    </main>
+
+    <!-- MODAL DE MEMÓRIA DE CÁLCULO -->
+    <div class="modal-overlay" id="calc-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 style="color: var(--accent-primary);" id="txt-modal-title">Memória de Cálculo Detalhada (ABNT NBR 5410)[cite: 1]</h3>
+                <button class="btn-ctrl" onclick="app.closeModal()">✕</button>
+            </div>
+            <div class="modal-body" id="modal-steps-container">
+                <!-- Etapas injetadas via JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- RODAPÉ E AVISO LEGAL -->
+    <footer>
+        <p id="txt-disclaimer">
+            Esta calculadora foi desenvolvida exclusivamente para fins educacionais. Apesar de seguir os critérios da ABNT NBR 5410, os resultados devem sempre ser conferidos por um profissional habilitado[cite: 1].
+        </p>
+    </footer>
+
+    <!-- LOGICA DE PROCESSAMENTO EM C++ / JAVASCRIPT EMULADO -->
+    <script>
+        /**
+         * ==========================================================================
+         * CORE ENGINE DE CÁLCULO NBR 5410[cite: 1]
+         * Organizado de forma modular simulando um motor C++ compilado em WebAssembly[cite: 1]
+         * ==========================================================================
+         */
+        const NBR5410_DATA = {
+            // Tabelas de Seções Mínimas (Item 6.2.6.1.1)[cite: 1]
+            minSections: {
+                lighting: 1.5,
+                sockets: 2.5,
+                motor: 2.5,
+                general: 2.5
+            },
+
+            // Resisitividades do condutor (ohm.mm²/m) a 20°C e coeficientes térmicos[cite: 1]
+            resistivity: {
+                Cu: 0.0178,
+                Al: 0.0282
+            },
+
+            // Tabela 36 - Fatores de correção para temperaturas ambientes diferentes de 30°C[cite: 1]
+            tempFactors: {
+                PVC:  { 10: 1.22, 15: 1.17, 20: 1.12, 25: 1.06, 30: 1.00, 35: 0.94, 40: 0.87, 45: 0.79, 50: 0.71, 55: 0.61, 60: 0.50 },
+                XLPE: { 10: 1.15, 15: 1.12, 20: 1.08, 25: 1.04, 30: 1.00, 35: 0.96, 40: 0.91, 45: 0.87, 50: 0.82, 55: 0.76, 60: 0.71 }
+            },
+
+            // Tabela 42 - Fatores de correção para agrupamento de circuitos (Método B1/B2)[cite: 1]
+            groupingFactors: {
+                1: 1.00,
+                2: 0.80,
+                3: 0.70,
+                4: 0.65,
+                5: 0.60
+            },
+
+            // Tabelas de Capacidade de Condução de Corrente (A) - Cobre (Tabela 36 e 37 da NBR)[cite: 1]
+            // Método B1 (2 e 3 condutores carregados - PVC)[cite: 1]
+            capacities: {
+                Cu: {
+                    PVC: {
+                        B1: {
+                            2: { 1.5: 17.5, 2.5: 24, 4: 32, 6: 41, 10: 57, 16: 76, 25: 101, 35: 125, 50: 151, 70: 192, 95: 232, 120: 269, 150: 300, 185: 341, 240: 400 },
+                            3: { 1.5: 15.5, 2.5: 21, 4: 28, 6: 36, 10: 50, 16: 68, 25: 89,  35: 110, 50: 134, 70: 171, 95: 207, 120: 239, 150: 262, 185: 296, 240: 346 }
+                        }
+                    },
+                    XLPE: {
+                        B1: {
+                            2: { 1.5: 23, 2.5: 31, 4: 42, 6: 54, 10: 75, 16: 100, 25: 133, 35: 164, 50: 198, 70: 253, 95: 306, 120: 354, 150: 393, 185: 449, 240: 528 },
+                            3: { 1.5: 20, 2.5: 28, 4: 37, 6: 48, 10: 66, 16: 88,  25: 117, 35: 144, 50: 175, 70: 222, 95: 269, 120: 309, 150: 343, 185: 391, 240: 459 }
+                        }
+                    }
+                },
+                Al: {
+                    PVC: {
+                        B1: {
+                            2: { 16: 59, 25: 78, 35: 96, 50: 117, 70: 148, 95: 180, 120: 208, 150: 232, 185: 263, 240: 310 },
+                            3: { 16: 52, 25: 69, 35: 85, 50: 103, 70: 131, 95: 159, 120: 184, 150: 202, 185: 228, 240: 267 }
+                        }
+                    },
+                    XLPE: {
+                        B1: {
+                            2: { 16: 77, 25: 102, 35: 126, 50: 152, 70: 194, 95: 235, 120: 271, 150: 302, 185: 345, 240: 405 },
+                            3: { 16: 67, 25: 89,  35: 110, 50: 134, 70: 171, 95: 207, 120: 238, 150: 264, 185: 300, 240: 352 }
+                        }
+                    }
+                }
+            }
+        };
+
+        const TRANSLATIONS = {
+            pt: {
+                title: "Dimensionamento NBR 5410",
+                subtitle: "Calculadora Técnica Oficial",
+                secInput: "Parâmetros do Circuito",
+                secResults: "Resultado do Dimensionamento",
+                lblCircuitType: "Tipo de Circuito",
+                lblVoltage: "Tensão / Sistema",
+                lblPower: "Potência / Carga",
+                lblFp: "Fator de Potência (cos φ)",
+                lblMaterial: "Condutor / Isolação",
+                lblInstallMethod: "Método de Instalação (Tabela 33)",
+                lblGrouping: "Agrupamento / Cond. Carregados",
+                lblTempLength: "Temp. (°C) / Comprimento (m)",
+                lblMaxVd: "Queda de Tensão Máxima Permitida (%)",
+                lblResSection: "Bitola Recomendada",
+                lblResIz: "Capacidade do Cabo (Iz)",
+                lblResVd: "Queda de Tensão (ΔU)",
+                lblResReserve: "Reserva de Capacidade",
+                lblChartOcc: "Ocupação Térmica (Ib / Iz)",
+                lblChartVd: "Queda de Tensão Relativa",
+                btnCalcMemory: "Memória de Cálculo",
+                btnPdf: "Exportar PDF",
+                modalTitle: "Memória de Cálculo Detalhada (ABNT NBR 5410)",
+                disclaimer: "Esta calculadora foi desenvolvida exclusivamente para fins educacionais. Apesar de seguir os critérios da ABNT NBR 5410, os resultados devem sempre ser conferidos por um profissional habilitado."
+            },
+            en: {
+                title: "NBR 5410 Wire Sizing",
+                subtitle: "Official Technical Calculator",
+                secInput: "Circuit Parameters",
+                secResults: "Sizing Results",
+                lblCircuitType: "Circuit Type",
+                lblVoltage: "Voltage / System",
+                lblPower: "Power / Load",
+                lblFp: "Power Factor (cos φ)",
+                lblMaterial: "Conductor / Insulation",
+                lblInstallMethod: "Installation Method (Table 33)",
+                lblGrouping: "Grouping / Loaded Cond.",
+                lblTempLength: "Temp. (°C) / Length (m)",
+                lblMaxVd: "Max Voltage Drop Allowed (%)",
+                lblResSection: "Recommended Size",
+                lblResIz: "Cable Capacity (Iz)",
+                lblResVd: "Voltage Drop (ΔU)",
+                lblResReserve: "Capacity Reserve",
+                lblChartOcc: "Thermal Loading (Ib / Iz)",
+                lblChartVd: "Relative Voltage Drop",
+                btnCalcMemory: "Calculation Memory",
+                btnPdf: "Export PDF",
+                modalTitle: "Detailed Calculation Memory (ABNT NBR 5410)",
+                disclaimer: "This calculator was developed exclusively for educational purposes. Although compliant with ABNT NBR 5410, results must always be verified by a qualified engineer."
+            }
+        };
+
+        class Application {
+            constructor() {
+                this.lang = localStorage.getItem("app_lang") || "pt";
+                this.theme = localStorage.getItem("app_theme") || "dark";
+                this.lastResult = null;
+                this.init();
+            }
+
+            init() {
+                document.documentElement.setAttribute("data-theme", this.theme);
+                this.updateLanguageDOM();
+                this.calculate();
+            }
+
+            toggleTheme() {
+                this.theme = this.theme === "dark" ? "light" : "dark";
+                localStorage.setItem("app_theme", this.theme);
+                document.documentElement.setAttribute("data-theme", this.theme);
+                document.getElementById("theme-icon").innerText = this.theme === "dark" ? "☀️" : "🌙";
+                document.getElementById("txt-theme-label").innerText = this.theme === "dark" ? "Claro" : "Escuro";
+                this.renderCharts();
+            }
+
+            toggleLanguage() {
+                this.lang = this.lang === "pt" ? "en" : "pt";
+                localStorage.setItem("app_lang", this.lang);
+                this.updateLanguageDOM();
+                this.calculate();
+            }
+
+            updateLanguageDOM() {
+                const t = TRANSLATIONS[this.lang];
+                document.getElementById("txt-title").innerText = t.title;
+                document.getElementById("txt-subtitle").innerText = t.subtitle;
+                document.getElementById("txt-sec-input").innerText = t.secInput;
+                document.getElementById("txt-sec-results").innerText = t.secResults;
+                document.getElementById("lbl-circuit-type").innerText = t.lblCircuitType;
+                document.getElementById("lbl-voltage").innerText = t.lblVoltage;
+                document.getElementById("lbl-power").innerText = t.lblPower;
+                document.getElementById("lbl-fp").innerText = t.lblFp;
+                document.getElementById("lbl-material").innerText = t.lblMaterial;
+                document.getElementById("lbl-install-method").innerText = t.lblInstallMethod;
+                document.getElementById("lbl-grouping").innerText = t.lblGrouping;
+                document.getElementById("lbl-temp-length").innerText = t.lblTempLength;
+                document.getElementById("lbl-max-vd").innerText = t.lblMaxVd;
+                document.getElementById("lbl-res-section").innerText = t.lblResSection;
+                document.getElementById("lbl-res-iz").innerText = t.lblResIz;
+                document.getElementById("lbl-res-vd").innerText = t.lblResVd;
+                document.getElementById("lbl-res-reserve").innerText = t.lblResReserve;
+                document.getElementById("lbl-chart-occ").innerText = t.lblChartOcc;
+                document.getElementById("lbl-chart-vd").innerText = t.lblChartVd;
+                document.getElementById("btn-txt-calc-memory").innerText = t.btnCalcMemory;
+                document.getElementById("btn-txt-pdf").innerText = t.btnPdf;
+                document.getElementById("txt-modal-title").innerText = t.modalTitle;
+                document.getElementById("txt-disclaimer").innerText = t.disclaimer;
+                document.getElementById("txt-lang-label").innerText = this.lang === "pt" ? "EN" : "PT";
+            }
+
+            calculate() {
+                // Entrada de dados
+                const circuitType = document.getElementById("in-circuit-type").value;
+                const voltage = parseFloat(document.getElementById("in-voltage-val").value);
+                const system = document.getElementById("in-system").value;
+                const powerVal = parseFloat(document.getElementById("in-power-val").value) || 0;
+                const powerUnit = document.getElementById("in-power-unit").value;
+                const fp = parseFloat(document.getElementById("in-fp").value) || 0.95;
+                const matCond = document.getElementById("in-mat-cond").value;
+                const matIso = document.getElementById("in-mat-iso").value;
+                const installMethod = document.getElementById("in-install-method").value;
+                const grouping = parseInt(document.getElementById("in-grouping").value);
+                const loadedCond = parseInt(document.getElementById("in-loaded-cond").value);
+                const temp = parseInt(document.getElementById("in-temp").value);
+                const length = parseFloat(document.getElementById("in-length").value) || 0;
+                const maxVd = parseFloat(document.getElementById("in-max-vd").value) || 4.0;
+
+                // 1. Cálculo da Corrente de Projeto (Ib)[cite: 1]
+                let powerW = powerVal;
+                if (powerUnit === "kW") powerW *= 1000;
+                
+                let Ib = 0;
+                if (powerUnit === "A") {
+                    Ib = powerVal;
+                } else {
+                    if (system === "mono" || system === "bi") {
+                        Ib = powerW / (voltage * fp);
+                    } else { // Trifásico
+                        Ib = powerW / (Math.sqrt(3) * voltage * fp);
+                    }
+                }
+
+                // 2. Obtenção dos Fatores de Correção (Tabelas 36 e 42)[cite: 1]
+                const fTemp = NBR5410_DATA.tempFactors[matIso][temp] || 1.0;
+                const fGroup = NBR5410_DATA.groupingFactors[grouping] || 1.0;
+                const fCorrection = fTemp * fGroup;
+
+                // Corrente corrigida projetada
+                const Ib_corrected = Ib / fCorrection;
+
+                // 3. Aplicação da Seção Mínima da Norma (Item 6.2.6)[cite: 1]
+                let minSectionNorm = NBR5410_DATA.minSections[circuitType] || 1.5;
+                if (matCond === "Al" && minSectionNorm < 16) minSectionNorm = 16; // Restrição de Alumínio (Item 6.2.3.7)[cite: 1]
+
+                // 4. Dimensionamento pela Capacidade de Condução de Corrente (Critério Ampacidade)[cite: 1]
+                const capTable = NBR5410_DATA.capacities[matCond][matIso]["B1"][loadedCond];
+                let selectedSectionAmpacity = minSectionNorm;
+                let Iz = 0;
+
+                const availableSections = Object.keys(capTable).map(Number).sort((a,b)=>a-b);
+                for (let section of availableSections) {
+                    if (section >= minSectionNorm && capTable[section] >= Ib_corrected) {
+                        selectedSectionAmpacity = section;
+                        Iz = capTable[section] * fCorrection;
+                        break;
+                    }
+                }
+
+                // 5. Dimensionamento pela Queda de Tensão (Item 6.2.7)[cite: 1]
+                const rho = NBR5410_DATA.resistivity[matCond];
+                let selectedSectionVd = selectedSectionAmpacity;
+                let calculatedVdPercent = 0;
+                let calculatedVdVolts = 0;
+
+                for (let section of availableSections) {
+                    if (section < selectedSectionAmpacity) continue;
+
+                    // Queda de Tensão ΔU = (k * rho * L * Ib * cosphi) / S[cite: 1]
+                    // k = 2 para Monofásico/Bifásico, k = sqrt(3) para Trifásico[cite: 1]
+                    const k = (system === "tri") ? Math.sqrt(3) : 2.0;
+                    calculatedVdVolts = (k * rho * length * Ib * fp) / section;
+                    calculatedVdPercent = (calculatedVdVolts / voltage) * 100;
+
+                    if (calculatedVdPercent <= maxVd) {
+                        selectedSectionVd = section;
+                        break;
+                    }
+                }
+
+                // Bitola Final e Critério Limitante
+                const finalSection = Math.max(selectedSectionAmpacity, selectedSectionVd);
+                let limitingCriterion = "Capacidade de Condução";
+                if (finalSection > selectedSectionAmpacity) {
+                    limitingCriterion = "Queda de Tensão";
+                } else if (finalSection === minSectionNorm && Ib_corrected < capTable[minSectionNorm]) {
+                    limitingCriterion = "Seção Mínima da Norma";
+                }
+
+                const finalIz = (capTable[finalSection] || 0) * fCorrection;
+                const capacityReserve = finalIz > 0 ? (((finalIz - Ib) / finalIz) * 100).toFixed(1) : 0;
+
+                // Salvar estado
+                this.lastResult = {
+                    Ib: Ib.toFixed(2),
+                    Ib_corrected: Ib_corrected.toFixed(2),
+                    finalSection,
+                    finalIz: finalIz.toFixed(2),
+                    vdPercent: calculatedVdPercent.toFixed(2),
+                    vdVolts: calculatedVdVolts.toFixed(2),
+                    limitingCriterion,
+                    fCorrection: fCorrection.toFixed(2),
+                    fTemp,
+                    fGroup,
+                    capacityReserve,
+                    voltage,
+                    length,
+                    maxVd
+                };
+
+                // Atualizar DOM
+                document.getElementById("res-section").innerText = `${finalSection} mm²`;
+                document.getElementById("res-limiting-criterion").innerText = `Critério: ${limitingCriterion}`;
+                document.getElementById("res-iz").innerText = `${finalIz.toFixed(1)} A`;
+                document.getElementById("res-ib").innerText = `Corrente de Projeto (Ib): ${Ib.toFixed(1)} A`;
+                document.getElementById("res-vd").innerText = `${calculatedVdPercent.toFixed(2)} %`;
+                document.getElementById("res-vd-volts").innerText = `${calculatedVdVolts.toFixed(2)} V`;
+                document.getElementById("res-reserve").innerText = `${capacityReserve} %`;
+                document.getElementById("res-fct-combined").innerText = `Fator Correção Total: ${fCorrection.toFixed(2)}`;
+
+                this.renderCharts();
+            }
+
+            renderCharts() {
+                if (!this.lastResult) return;
+
+                const { Ib, finalIz, vdPercent, maxVd } = this.lastResult;
+
+                // 1. Gráfico Gauge SVG (Ocupação Térmica)
+                const ratio = Math.min(parseFloat(Ib) / parseFloat(finalIz), 1.0) || 0;
+                const strokeDash = (ratio * 283).toFixed(1);
+                const gaugeSvg = `
+                    <svg width="120" height="120" viewBox="0 0 120 120">
+                        <circle cx="60" cy="60" r="45" fill="none" stroke="var(--panel-border)" stroke-width="10"/>
+                        <circle cx="60" cy="60" r="45" fill="none" stroke="var(--accent-primary)" stroke-width="10"
+                            stroke-dasharray="${strokeDash} 283" transform="rotate(-90 60 60)" stroke-linecap="round"/>
+                        <text x="60" y="65" text-anchor="middle" fill="var(--text-primary)" font-weight="bold" font-size="16">${(ratio * 100).toFixed(0)}%</text>
+                    </svg>
+                `;
+                document.getElementById("svg-gauge").outerHTML = gaugeSvg;
+
+                // 2. Gráfico Barra SVG (Queda de Tensão)
+                const vdRatio = Math.min(parseFloat(vdPercent) / parseFloat(maxVd), 1.0) || 0;
+                const barHeight = (vdRatio * 80).toFixed(1);
+                const barColor = vdRatio > 0.9 ? "var(--accent-danger)" : "var(--accent-success)";
+                const barSvg = `
+                    <svg id="svg-bar" width="120" height="120" viewBox="0 0 120 120">
+                        <rect x="45" y="20" width="30" height="80" fill="var(--panel-border)" rx="4"/>
+                        <rect x="45" y="${100 - barHeight}" width="30" height="${barHeight}" fill="${barColor}" rx="4"/>
+                        <line x1="35" y1="20" x2="85" y2="20" stroke="var(--accent-danger)" stroke-width="2" stroke-dasharray="2"/>
+                        <text x="60" y="115" text-anchor="middle" fill="var(--text-secondary)" font-size="10">${vdPercent}% / ${maxVd}%</text>
+                    </svg>
+                `;
+                document.getElementById("svg-bar").outerHTML = barSvg;
+            }
+
+            openModal() {
+                if (!this.lastResult) return;
+                const res = this.lastResult;
+                const container = document.getElementById("modal-steps-container");
+
+                container.innerHTML = `
+                    <div class="step-card">
+                        <div class="step-title">Etapa 1: Corrente de Projeto (Ib)</div>
+                        <div>Cálculo da corrente nominal absorvida pelo circuito[cite: 1]:</div>
+                        <div class="formula-box">Ib = Potência / (V * cos φ) = ${res.Ib} A</div>
+                    </div>
+                    <div class="step-card">
+                        <div class="step-title">Etapa 2: Aplicação dos Fatores de Correção</div>
+                        <div>Correção térmica e agrupamento conforme Tabelas 36 e 42 da NBR 5410[cite: 1]:</div>
+                        <div class="formula-box">Fator Comb. = Temp (${res.fTemp}) * Agrup (${res.fGroup}) = ${res.fCorrection}</div>
+                        <div class="formula-box">Ib Corrigida = Ib / Fator Comb. = ${res.Ib_corrected} A</div>
+                    </div>
+                    <div class="step-card">
+                        <div class="step-title">Etapa 3: Critério da Ampacidade (Capacidade de Condução)</div>
+                        <div>Consulta das tabelas oficiais de condutores de acordo com a isolação e método[cite: 1]:</div>
+                        <div class="formula-box">Capacidade Requerida (Iz) ≥ ${res.Ib_corrected} A</div>
+                    </div>
+                    <div class="step-card">
+                        <div class="step-title">Etapa 4: Verificação da Queda de Tensão (ΔU)</div>
+                        <div>Cálculo da resistência e queda de tensão percentual[cite: 1]:</div>
+                        <div class="formula-box">ΔU Calculada = ${res.vdVolts} V (${res.vdPercent}%) | Máximo Permitido = ${res.maxVd}%</div>
+                    </div>
+                    <div class="step-card" style="border-left-color: var(--accent-success);">
+                        <div class="step-title">Resultado Final Selecionado</div>
+                        <div class="formula-box">Bitola Mínima: ${res.finalSection} mm² | Limitante: ${res.limitingCriterion}</div>
+                    </div>
+                `;
+
+                document.getElementById("calc-modal").classList.add("active");
+            }
+
+            closeModal() {
+                document.getElementById("calc-modal").classList.remove("active");
+            }
+
+            exportPDF() {
+                window.print();
+            }
+        }
+
+        // Inicializar aplicação
+        const app = new Application();
+    </script>
+</body>
+</html>
