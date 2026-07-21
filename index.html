@@ -440,12 +440,12 @@
         }
 
         /* ==========================================================================
-           8. ESTILOS DE IMPRESSÃO E PDF
+           8. ESTILOS DE IMPRESSÃO E PDF (CORRIGIDO PARA EXACTAMENTE 2 PÁGINAS)
            ========================================================================== */
         @media print {
             @page {
                 size: A4 portrait;
-                margin: 10mm;
+                margin: 8mm;
             }
 
             body { 
@@ -463,38 +463,43 @@
             header {
                 box-shadow: none;
                 border: 1px solid #ccc;
-                margin-bottom: 15px;
+                margin-bottom: 10px;
+                padding: 10px 15px;
             }
 
             main {
                 display: grid !important;
                 grid-template-columns: 1fr 1fr !important;
-                gap: 15px !important;
-                align-items: center !important;
-                justify-content: center !important;
-                min-height: calc(100vh - 120px);
-                page-break-after: always;
+                gap: 10px !important;
+                align-items: start !important;
+                min-height: auto !important;
             }
 
             .panel { 
                 border: 1px solid #ccc; 
                 box-shadow: none; 
-                padding: 15px;
+                padding: 12px;
                 margin-bottom: 0;
             }
 
-            /* Forçar visibilidade da Memória de Cálculo centralizada na Página 2 */
+            /* Forçar a Página 1 a terminar após o Footer */
+            footer {
+                border: 1px solid #ccc;
+                margin-top: 10px;
+                padding: 10px 15px;
+                page-break-after: always !important;
+            }
+
+            /* Forçar a Memória de Cálculo a ser a Página 2 isolada */
             .modal-overlay { 
-                position: static !important; 
+                position: relative !important; 
                 opacity: 1 !important; 
                 pointer-events: auto !important; 
                 background: none !important;
-                page-break-before: always;
-                display: flex !important;
-                justify-content: center !important;
-                align-items: center !important;
-                min-height: 100vh;
+                display: block !important;
                 width: 100% !important;
+                height: auto !important;
+                page-break-before: auto !important;
             }
 
             .modal-content { 
@@ -503,16 +508,16 @@
                 border: 1px solid #ccc !important; 
                 box-shadow: none !important;
                 margin: 0 auto !important;
+                max-height: none !important;
             }
 
             .modal-header .btn-ctrl {
                 display: none !important;
             }
 
-            footer {
-                border: 1px solid #ccc;
-                page-break-inside: avoid;
-                margin-top: 15px;
+            .modal-body {
+                overflow: visible !important;
+                padding: 15px;
             }
 
             .profile-thumb {
@@ -728,7 +733,17 @@
         </section>
     </main>
 
-    <!-- MODAL DE MEMÓRIA DE CÁLCULO (INCLUÍDO NO PDF) -->
+    <!-- RODAPÉ -->
+    <footer>
+        <div class="footer-content">
+            <p id="txt-disclaimer">
+                Esta calculadora foi desenvolvida exclusivamente para fins educacionais. Apesar de seguir os critérios da ABNT NBR 5410, os resultados devem sempre ser conferidos por um profissional habilitado.
+            </p>
+        </div>
+        <img src="foto_rodrigo.png" alt="Rodrigo" class="profile-thumb" onerror="this.style.display='none'">
+    </footer>
+
+    <!-- MODAL DE MEMÓRIA DE CÁLCULO (INCLUÍDO NO PDF NA PÁGINA 2) -->
     <div class="modal-overlay" id="calc-modal">
         <div class="modal-content">
             <div class="modal-header">
@@ -740,16 +755,6 @@
             </div>
         </div>
     </div>
-
-    <!-- RODAPÉ -->
-    <footer>
-        <div class="footer-content">
-            <p id="txt-disclaimer">
-                Esta calculadora foi desenvolvida exclusivamente para fins educacionais. Apesar de seguir os critérios da ABNT NBR 5410, os resultados devem sempre ser conferidos por um profissional habilitado.
-            </p>
-        </div>
-        <img src="foto_rodrigo.png" alt="Rodrigo" class="profile-thumb" onerror="this.style.display='none'">
-    </footer>
 
     <!-- LÓGICA DE PROCESSAMENTO -->
     <script>
