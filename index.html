@@ -6,41 +6,41 @@
     <title>Calculadora de Dimensionamento de Condutores NBR 5410</title>
     <style>
         /* ==========================================================================
-           1. ESTILOS GERAIS E VARIÁVEIS DE TEMA (PALETA TERROSA: MARROM, TERRACOTA, LARANJA, AMARELO, BEGE)
+           1. ESTILOS GERAIS E VARIÁVEIS DE TEMA (PALETA TERROSA)
            ========================================================================== */
         :root {
             --font-main: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             
-            /* Dark Theme (Fundo Marrom Escuro / Destaques Terracota, Laranja e Amarelo) */
+            /* Dark Theme */
             --bg-color: #1a120c;           /* Marrom muito escuro */
-            --panel-bg: #261b13;         /* Marrom café */
-            --panel-border: #3d2b1f;     /* Marrom médio */
-            --text-primary: #f5ebe0;     /* Bege claro */
-            --text-secondary: #d5bdaf;   /* Bege suave */
-            --accent-primary: #e07a5f;   /* Terracota */
-            --accent-hover: #f4a261;     /* Laranja suave */
-            --accent-success: #e9c46a;   /* Amarelo queimado / Ouro */
-            --accent-warning: #f4a261;   /* Laranja */
-            --accent-danger: #d62828;    /* Terracota intenso/Vermelho terroso */
+            --panel-bg: #261b13;          /* Marrom café */
+            --panel-border: #3d2b1f;      /* Marrom médio */
+            --text-primary: #f5ebe0;      /* Bege claro */
+            --text-secondary: #d5bdaf;    /* Bege suave */
+            --accent-primary: #e07a5f;    /* Terracota */
+            --accent-hover: #f4a261;      /* Laranja suave */
+            --accent-success: #e9c46a;    /* Amarelo queimado / Ouro */
+            --accent-warning: #f4a261;    /* Laranja */
+            --accent-danger: #d62828;     /* Terracota intenso/Vermelho terroso */
             --input-bg: #150e09;          /* Marrom profundo */
-            --input-border: #4a3525;     /* Marrom suave */
+            --input-border: #4a3525;      /* Marrom suave */
             --shadow-color: rgba(0, 0, 0, 0.5);
         }
 
         [data-theme="light"] {
-            /* Light Theme (Fundo Bege / Destaques Terracota, Marrom e Laranja) */
+            /* Light Theme */
             --bg-color: #f8f1e7;           /* Bege creme claro */
-            --panel-bg: #ffffff;         /* Branco puro para contraste */
-            --panel-border: #e6ccb2;     /* Bege médio */
-            --text-primary: #3d2b1f;     /* Marrom escuro para texto */
-            --text-secondary: #7f5539;   /* Marrom médio */
-            --accent-primary: #c8553d;   /* Terracota clássico */
-            --accent-hover: #b2432b;     /* Terracota escuro */
-            --accent-success: #d4a373;   /* Bege dourado / Amarelo terroso */
-            --accent-warning: #f4a261;   /* Laranja */
-            --accent-danger: #9e2a2b;    /* Marrom avermelhado */
-            --input-bg: #fefae0;          /* Bege amarelado bem claro */
-            --input-border: #dde5b6;     /* Bege oliva suave */
+            --panel-bg: #ffffff;          /* Branco puro */
+            --panel-border: #e6ccb2;      /* Bege médio */
+            --text-primary: #3d2b1f;      /* Marrom escuro */
+            --text-secondary: #7f5539;    /* Marrom médio */
+            --accent-primary: #c8553d;    /* Terracota clássico */
+            --accent-hover: #b2432b;      /* Terracota escuro */
+            --accent-success: #d4a373;    /* Bege dourado */
+            --accent-warning: #f4a261;    /* Laranja */
+            --accent-danger: #9e2a2b;     /* Marrom avermelhado */
+            --input-bg: #fefae0;          /* Bege amarelado claro */
+            --input-border: #dde5b6;      /* Bege oliva suave */
             --shadow-color: rgba(61, 43, 31, 0.12);
         }
 
@@ -828,177 +828,198 @@
             }
 
             calculate() {
-                const circuitType = document.getElementById("in-circuit-type").value;
-                const voltage = parseFloat(document.getElementById("in-voltage-val").value);
-                const system = document.getElementById("in-system").value;
-                const powerVal = parseFloat(document.getElementById("in-power-val").value) || 0;
-                const powerUnit = document.getElementById("in-power-unit").value;
+                const cType = document.getElementById("in-circuit-type").value;
+                const vVal = parseFloat(document.getElementById("in-voltage-val").value);
+                const sys = document.getElementById("in-system").value;
+                const pVal = parseFloat(document.getElementById("in-power-val").value) || 0;
+                const pUnit = document.getElementById("in-power-unit").value;
                 const fp = parseFloat(document.getElementById("in-fp").value) || 0.95;
                 const matCond = document.getElementById("in-mat-cond").value;
                 const matIso = document.getElementById("in-mat-iso").value;
-                const installMethod = document.getElementById("in-install-method").value;
+                const instMethod = document.getElementById("in-install-method").value;
                 const grouping = parseInt(document.getElementById("in-grouping").value);
                 const loadedCond = parseInt(document.getElementById("in-loaded-cond").value);
                 const temp = parseInt(document.getElementById("in-temp").value);
                 const length = parseFloat(document.getElementById("in-length").value) || 0;
                 const maxVd = parseFloat(document.getElementById("in-max-vd").value) || 4.0;
 
-                let powerW = powerVal;
-                if (powerUnit === "kW") powerW *= 1000;
-                
-                let Ib = 0;
-                if (powerUnit === "A") {
-                    Ib = powerVal;
+                // 1. Corrente de Projeto (Ib)
+                let ib = 0;
+                if (pUnit === "A") {
+                    ib = pVal;
                 } else {
-                    if (system === "mono" || system === "bi") {
-                        Ib = powerW / (voltage * fp);
+                    let pWatts = pVal;
+                    if (pUnit === "kW") pWatts *= 1000;
+                    if (pUnit === "kVA") pWatts *= 1000 * fp;
+                    if (pUnit === "VA") pWatts *= fp;
+
+                    if (sys === "tri") {
+                        ib = pWatts / (Math.sqrt(3) * vVal * fp);
                     } else {
-                        Ib = powerW / (Math.sqrt(3) * voltage * fp);
+                        ib = pWatts / (vVal * fp);
                     }
                 }
 
-                const fTemp = NBR5410_DATA.tempFactors[matIso][temp] || 1.0;
+                // 2. Fatores de Correção
+                const fTemp = (NBR5410_DATA.tempFactors[matIso] && NBR5410_DATA.tempFactors[matIso][temp]) || 1.0;
                 const fGroup = NBR5410_DATA.groupingFactors[grouping] || 1.0;
-                const fCorrection = fTemp * fGroup;
-                const Ib_corrected = Ib / fCorrection;
+                const fct = fTemp * fGroup;
 
-                let minSectionNorm = NBR5410_DATA.minSections[circuitType] || 1.5;
-                if (matCond === "Al" && minSectionNorm < 16) minSectionNorm = 16;
+                // Corrente corrigida exigida para a tabela
+                const ibReq = ib / fct;
 
-                const capTable = NBR5410_DATA.capacities[matCond][matIso]["B1"][loadedCond];
-                let selectedSectionAmpacity = minSectionNorm;
-                let Iz = 0;
+                // 3. Tabela de Capacidade
+                let tableCap = null;
+                try {
+                    tableCap = NBR5410_DATA.capacities[matCond][matIso]["B1"][loadedCond];
+                } catch (e) {
+                    tableCap = {};
+                }
 
-                const availableSections = Object.keys(capTable).map(Number).sort((a,b)=>a-b);
-                for (let section of availableSections) {
-                    if (section >= minSectionNorm && capTable[section] >= Ib_corrected) {
-                        selectedSectionAmpacity = section;
-                        Iz = capTable[section] * fCorrection;
+                const sectionMinNorm = NBR5410_DATA.minSections[cType] || 1.5;
+                let chosenSection = 0;
+                let izBase = 0;
+                let izReal = 0;
+
+                const sections = Object.keys(tableCap).map(Number).sort((a,b) => a - b);
+
+                // Dimensionamento por Ampacidade
+                for (let s of sections) {
+                    if (s >= sectionMinNorm && tableCap[s] >= ibReq) {
+                        chosenSection = s;
+                        izBase = tableCap[s];
+                        izReal = izBase * fct;
                         break;
                     }
                 }
 
+                if (!chosenSection && sections.length > 0) {
+                    chosenSection = sections[sections.length - 1];
+                    izBase = tableCap[chosenSection];
+                    izReal = izBase * fct;
+                }
+
+                // 4. Queda de Tensão (ΔU)
                 const rho = NBR5410_DATA.resistivity[matCond];
-                let selectedSectionVd = selectedSectionAmpacity;
-                let calculatedVdPercent = 0;
-                let calculatedVdVolts = 0;
+                let vdVolts = 0;
+                let vdPercent = 0;
 
-                for (let section of availableSections) {
-                    if (section < selectedSectionAmpacity) continue;
-
-                    const k = (system === "tri") ? Math.sqrt(3) : 2.0;
-                    calculatedVdVolts = (k * rho * length * Ib * fp) / section;
-                    calculatedVdPercent = (calculatedVdVolts / voltage) * 100;
-
-                    if (calculatedVdPercent <= maxVd) {
-                        selectedSectionVd = section;
-                        break;
-                    }
+                if (chosenSection > 0) {
+                    const factorSys = (sys === "tri") ? Math.sqrt(3) : 2;
+                    vdVolts = (factorSys * rho * length * ib) / chosenSection;
+                    vdPercent = (vdVolts / vVal) * 100;
                 }
 
-                const finalSection = Math.max(selectedSectionAmpacity, selectedSectionVd);
-                let limitingCriterion = "Capacidade de Condução";
-                if (finalSection > selectedSectionAmpacity) {
-                    limitingCriterion = "Queda de Tensão";
-                } else if (finalSection === minSectionNorm && Ib_corrected < capTable[minSectionNorm]) {
-                    limitingCriterion = "Seção Mínima da Norma";
+                // Verificar se precisa aumentar bitola devido à queda de tensão
+                let limitingCriterion = "Seção Mínima da Norma";
+                if (chosenSection > sectionMinNorm) {
+                    limitingCriterion = "Capacidade de Condução (Ampacidade)";
                 }
 
-                const finalIz = (capTable[finalSection] || 0) * fCorrection;
-                const capacityReserve = finalIz > 0 ? (((finalIz - Ib) / finalIz) * 100).toFixed(1) : 0;
+                while (vdPercent > maxVd && sections.indexOf(chosenSection) < sections.length - 1) {
+                    const idx = sections.indexOf(chosenSection);
+                    chosenSection = sections[idx + 1];
+                    izBase = tableCap[chosenSection];
+                    izReal = izBase * fct;
+                    
+                    const factorSys = (sys === "tri") ? Math.sqrt(3) : 2;
+                    vdVolts = (factorSys * rho * length * ib) / chosenSection;
+                    vdPercent = (vdVolts / vVal) * 100;
+                    limitingCriterion = "Queda de Tensão Limite";
+                }
+
+                const thermalOccupancy = izReal > 0 ? (ib / izReal) * 100 : 0;
+                const reserve = Math.max(0, 100 - thermalOccupancy);
 
                 this.lastResult = {
-                    Ib: Ib.toFixed(2),
-                    Ib_corrected: Ib_corrected.toFixed(2),
-                    finalSection,
-                    finalIz: finalIz.toFixed(2),
-                    vdPercent: calculatedVdPercent.toFixed(2),
-                    vdVolts: calculatedVdVolts.toFixed(2),
-                    limitingCriterion,
-                    fCorrection: fCorrection.toFixed(2),
-                    fTemp,
-                    fGroup,
-                    capacityReserve,
-                    voltage,
-                    length,
-                    maxVd
+                    ib, izReal, izBase, fct, chosenSection, limitingCriterion,
+                    vdVolts, vdPercent, maxVd, thermalOccupancy, reserve,
+                    vVal, sys, length, pVal, pUnit, matCond, matIso, temp, grouping
                 };
 
-                document.getElementById("res-section").innerText = `${finalSection} mm²`;
-                document.getElementById("res-limiting-criterion").innerText = `Critério: ${limitingCriterion}`;
-                document.getElementById("res-iz").innerText = `${finalIz.toFixed(1)} A`;
-                document.getElementById("res-ib").innerText = `Corrente de Projeto (Ib): ${Ib.toFixed(1)} A`;
-                document.getElementById("res-vd").innerText = `${calculatedVdPercent.toFixed(2)} %`;
-                document.getElementById("res-vd-volts").innerText = `${calculatedVdVolts.toFixed(2)} V`;
-                document.getElementById("res-reserve").innerText = `${capacityReserve} %`;
-                document.getElementById("res-fct-combined").innerText = `Fator Correção Total: ${fCorrection.toFixed(2)}`;
+                this.renderResults();
+            }
+
+            renderResults() {
+                const r = this.lastResult;
+                if (!r) return;
+
+                document.getElementById("res-section").innerText = `${r.chosenSection} mm²`;
+                document.getElementById("res-limiting-criterion").innerText = `Critério: ${r.limitingCriterion}`;
+                document.getElementById("res-iz").innerText = `${r.izReal.toFixed(1)} A`;
+                document.getElementById("res-ib").innerText = `Corrente de Projeto (Ib): ${r.ib.toFixed(1)} A`;
+                document.getElementById("res-vd").innerText = `${r.vdPercent.toFixed(2)} %`;
+                document.getElementById("res-vd-volts").innerText = `${r.vdVolts.toFixed(2)} V`;
+                document.getElementById("res-reserve").innerText = `${r.reserve.toFixed(1)} %`;
+                document.getElementById("res-fct-combined").innerText = `Fator Correção Total: ${r.fct.toFixed(2)}`;
+
+                const badge = document.getElementById("status-badge");
+                if (r.vdPercent > r.maxVd || r.ib > r.izReal) {
+                    badge.innerText = "ALERTA";
+                    badge.style.background = "var(--accent-danger)";
+                } else {
+                    badge.innerText = "OK";
+                    badge.style.background = "var(--accent-primary)";
+                }
 
                 this.renderCharts();
             }
 
             renderCharts() {
-                if (!this.lastResult) return;
+                const r = this.lastResult;
+                if (!r) return;
 
-                const { Ib, finalIz, vdPercent, maxVd } = this.lastResult;
-
-                // Gauge SVG
-                const ratio = Math.min(parseFloat(Ib) / parseFloat(finalIz), 1.0) || 0;
-                const strokeDash = (ratio * 283).toFixed(1);
-                const gaugeSvg = `
-                    <svg width="120" height="120" viewBox="0 0 120 120">
-                        <circle cx="60" cy="60" r="45" fill="none" stroke="var(--panel-border)" stroke-width="10"/>
-                        <circle cx="60" cy="60" r="45" fill="none" stroke="var(--accent-primary)" stroke-width="10"
+                // --- 1. Gráfico Ocupação Térmica (Gauge Circular) ---
+                const occ = Math.min(100, Math.max(0, r.thermalOccupancy));
+                const strokeDash = (occ * 283) / 100; // Círculo r=45, perímetro = 2*PI*45 ≈ 283
+                const gaugeSvg = document.getElementById("svg-gauge");
+                gaugeSvg.innerHTML = `
+                    <circle cx="60" cy="60" r="45" fill="none" stroke="var(--panel-border)" stroke-width="10"/>
+                    <circle cx="60" cy="60" r="45" fill="none" stroke="var(--accent-primary)" stroke-width="10"
                             stroke-dasharray="${strokeDash} 283" transform="rotate(-90 60 60)" stroke-linecap="round"/>
-                        <text x="60" y="65" text-anchor="middle" fill="var(--text-primary)" font-weight="bold" font-size="16">${(ratio * 100).toFixed(0)}%</text>
-                    </svg>
+                    <text x="60" y="65" text-anchor="middle" fill="var(--text-primary)" font-weight="700" font-size="16">${occ.toFixed(0)}%</text>
                 `;
-                document.getElementById("svg-gauge").outerHTML = gaugeSvg;
 
-                // Barra SVG
-                const vdRatio = Math.min(parseFloat(vdPercent) / parseFloat(maxVd), 1.0) || 0;
-                const barHeight = (vdRatio * 80).toFixed(1);
-                const barColor = vdRatio > 0.9 ? "var(--accent-danger)" : "var(--accent-primary)";
-                const barSvg = `
-                    <svg id="svg-bar" width="120" height="120" viewBox="0 0 120 120">
-                        <rect x="45" y="20" width="30" height="80" fill="var(--panel-border)" rx="4"/>
-                        <rect x="45" y="${100 - barHeight}" width="30" height="${barHeight}" fill="${barColor}" rx="4"/>
-                        <line x1="35" y1="20" x2="85" y2="20" stroke="var(--accent-danger)" stroke-width="2" stroke-dasharray="2"/>
-                        <text x="60" y="115" text-anchor="middle" fill="var(--text-secondary)" font-size="10">${vdPercent}% / ${maxVd}%</text>
-                    </svg>
+                // --- 2. Gráfico Queda de Tensão Relativa (Barra Vertical) ---
+                const relVd = Math.min(100, (r.vdPercent / r.maxVd) * 100);
+                const barHeight = (relVd * 70) / 100; // Altura máxima = 70px
+                const barY = 90 - barHeight;
+                const barColor = r.vdPercent > r.maxVd ? "var(--accent-danger)" : "var(--accent-primary)";
+
+                const barSvg = document.getElementById("svg-bar");
+                barSvg.innerHTML = `
+                    <rect x="45" y="20" width="30" height="70" rx="3" fill="var(--panel-border)"/>
+                    <rect x="45" y="${barY}" width="30" height="${barHeight}" rx="3" fill="${barColor}"/>
+                    <line x1="40" y1="20" x2="80" y2="20" stroke="var(--accent-danger)" stroke-width="2" stroke-dasharray="3 3"/>
+                    <text x="60" y="110" text-anchor="middle" fill="var(--text-secondary)" font-size="11">${r.vdPercent.toFixed(2)}% / ${r.maxVd}%</text>
                 `;
-                document.getElementById("svg-bar").outerHTML = barSvg;
             }
 
             openModal() {
-                if (!this.lastResult) return;
-                const res = this.lastResult;
-                const container = document.getElementById("modal-steps-container");
+                const r = this.lastResult;
+                if (!r) return;
 
+                const container = document.getElementById("modal-steps-container");
                 container.innerHTML = `
                     <div class="step-card">
-                        <div class="step-title">Etapa 1: Corrente de Projeto (Ib)</div>
-                        <div>Cálculo da corrente nominal absorvida pelo circuito:</div>
-                        <div class="formula-box">Ib = Potência / (V * cos φ) = ${res.Ib} A</div>
+                        <div class="step-title">1. Corrente de Projeto (Ib)</div>
+                        <div>Calculada com base na potência informada e no sistema selecionado.</div>
+                        <div class="formula-box">Ib = ${r.ib.toFixed(2)} A</div>
                     </div>
                     <div class="step-card">
-                        <div class="step-title">Etapa 2: Aplicação dos Fatores de Correção</div>
-                        <div>Correção térmica e agrupamento conforme Tabelas 36 e 42 da NBR 5410:</div>
-                        <div class="formula-box">Fator Comb. = Temp (${res.fTemp}) * Agrup (${res.fGroup}) = ${res.fCorrection}</div>
-                        <div class="formula-box">Ib Corrigida = Ib / Fator Comb. = ${res.Ib_corrected} A</div>
+                        <div class="step-title">2. Fatores de Correção de Temperatura e Agrupamento</div>
+                        <div>Fator Combinado (FCT) aplicado para a capacidade do condutor.</div>
+                        <div class="formula-box">FCT = ${r.fct.toFixed(2)} | Ib_corrigida = ${(r.ib / r.fct).toFixed(2)} A</div>
                     </div>
                     <div class="step-card">
-                        <div class="step-title">Etapa 3: Critério da Ampacidade (Capacidade de Condução)</div>
-                        <div>Consulta das tabelas oficiais de condutores de acordo com a isolação e método:</div>
-                        <div class="formula-box">Capacidade Requerida (Iz) ≥ ${res.Ib_corrected} A</div>
+                        <div class="step-title">3. Seção do Condutor Selecionada</div>
+                        <div>Atende os critérios de capacidade de corrente e queda de tensão.</div>
+                        <div class="formula-box">Seção: ${r.chosenSection} mm² | Iz_real: ${r.izReal.toFixed(1)} A</div>
                     </div>
                     <div class="step-card">
-                        <div class="step-title">Etapa 4: Verificação da Queda de Tensão (ΔU)</div>
-                        <div>Cálculo da resistência e queda de tensão percentual:</div>
-                        <div class="formula-box">ΔU Calculada = ${res.vdVolts} V (${res.vdPercent}%) | Máximo Permitido = ${res.maxVd}%</div>
-                    </div>
-                    <div class="step-card" style="border-left-color: var(--accent-success);">
-                        <div class="step-title">Resultado Final Selecionado</div>
-                        <div class="formula-box">Bitola Mínima: ${res.finalSection} mm² | Limitante: ${res.limitingCriterion}</div>
+                        <div class="step-title">4. Queda de Tensão Verificada (ΔU)</div>
+                        <div>Calculada para a distância de ${r.length} metros.</div>
+                        <div class="formula-box">ΔU: ${r.vdVolts.toFixed(2)} V (${r.vdPercent.toFixed(2)}%) | Máximo: ${r.maxVd}%</div>
                     </div>
                 `;
 
