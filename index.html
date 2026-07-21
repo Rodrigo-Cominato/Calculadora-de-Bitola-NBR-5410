@@ -334,7 +334,7 @@
         }
 
         /* ==========================================================================
-           6. MODAL (MEMÓRIA DE CÁLCULO)
+           6. MODAL (MEMÓRIA DE CÁLCULO & PARECER)
            ========================================================================== */
         .modal-overlay {
             position: fixed;
@@ -383,7 +383,7 @@
             font-size: 0.9rem;
             display: flex;
             flex-direction: column;
-            gap: 15px;
+            gap: 12px;
         }
 
         .step-card {
@@ -393,10 +393,19 @@
             border-radius: 0 6px 6px 0;
         }
 
+        .step-card.ai-card {
+            border-left-color: var(--accent-success);
+            background-color: rgba(233, 196, 106, 0.08);
+        }
+
         .step-title {
             font-weight: 700;
             color: var(--accent-primary);
             margin-bottom: 4px;
+        }
+
+        .step-card.ai-card .step-title {
+            color: var(--accent-success);
         }
 
         .formula-box {
@@ -406,6 +415,12 @@
             font-family: monospace;
             margin: 6px 0;
             border: 1px dashed var(--panel-border);
+            color: var(--text-primary);
+        }
+
+        .ai-summary-text {
+            font-size: 0.85rem;
+            line-height: 1.45;
             color: var(--text-primary);
         }
 
@@ -444,7 +459,7 @@
         }
 
         /* ==========================================================================
-           8. ESTILOS DE IMPRESSÃO (EXATAMENTE 2 PÁGINAS CENTRALIZADAS COM FOTOS E AVISOS)
+           8. ESTILOS DE IMPRESSÃO (2 PÁGINAS CENTRALIZADAS COM FOTOS E AVISOS)
            ========================================================================== */
         @media print {
             @page {
@@ -505,7 +520,7 @@
                 background: white !important;
             }
 
-            /* --- PÁGINA 2: MEMÓRIA DE CÁLCULO --- */
+            /* --- PÁGINA 2: MEMÓRIA DE CÁLCULO E PARECER IA --- */
             .modal-overlay { 
                 position: static !important; 
                 opacity: 1 !important; 
@@ -537,7 +552,16 @@
 
             .modal-body {
                 overflow: visible !important;
-                padding: 15px;
+                padding: 12px;
+            }
+
+            .step-card {
+                padding: 8px 12px;
+            }
+
+            .step-card.ai-card {
+                border-left-color: #333;
+                background-color: #f9f9f9 !important;
             }
 
             .print-only-footer {
@@ -778,7 +802,7 @@
         </footer>
     </div>
 
-    <!-- MODAL / PÁGINA 2 DE MEMÓRIA DE CÁLCULO -->
+    <!-- MODAL / PÁGINA 2 DE MEMÓRIA DE CÁLCULO E PARECER IA -->
     <div class="modal-overlay" id="calc-modal">
         <div class="modal-content">
             <div class="modal-header">
@@ -786,7 +810,7 @@
                 <button class="btn-ctrl" onclick="app.closeModal()">✕</button>
             </div>
             <div class="modal-body" id="modal-steps-container">
-                <!-- Etapas injetadas via JS -->
+                <!-- Etapas e Parecer Explicativo IA injetados via JS -->
             </div>
         </div>
 
@@ -801,7 +825,7 @@
         </div>
     </div>
 
-    <!-- LÓGICA DE PROCESSAMENTO -->
+    <!-- LÓGICA DE PROCESSAMENTO E GERADOR DE RESUMO TÉCNICO DIDÁTICO -->
     <script>
         const NBR5410_DATA = {
             minSections: {
@@ -926,7 +950,10 @@
                 step3Section: "Seção:",
                 step4Title: "4. Queda de Tensão Verificada (ΔU)",
                 step4Desc: "Calculada para a distância informada.",
-                step4Max: "Máximo:"
+                step4Max: "Máximo:",
+                
+                // IA / Resumo Didático
+                aiTitle: "🤖 Resumo Didático para Leigos (IA Assimilator)",
             },
             en: {
                 pageTitle: "NBR 5410 Conductor Sizing Calculator",
@@ -996,7 +1023,10 @@
                 step3Section: "Size:",
                 step4Title: "4. Verified Voltage Drop (ΔU)",
                 step4Desc: "Calculated for the specified distance.",
-                step4Max: "Maximum:"
+                step4Max: "Maximum:",
+                
+                // IA / Resumo Didático
+                aiTitle: "🤖 Beginner-Friendly Summary (AI Assimilator)"
             }
         };
 
@@ -1189,7 +1219,7 @@
                 this.lastResult = {
                     ib, izReal, izBase, fct, chosenSection, limitingCriterionKey,
                     vdVolts, vdPercent, maxVd, thermalOccupancy, reserve,
-                    vVal, sys, length, pVal, pUnit, matCond, matIso, temp, grouping
+                    vVal, sys, length, pVal, pUnit, matCond, matIso, temp, grouping, cType
                 };
 
                 this.renderResults();
@@ -1250,13 +1280,45 @@
                 `;
             }
 
+            // GERADOR DE RESUMO EXPLICATIVO EM LINGUAGEM LEIGA (SEM CUSTO DE API)
+            generateLaymanSummary(r) {
+                if (this.lang === "en") {
+                    let text = `<strong>What does this calculation mean?</strong><br>`;
+                    text += `• <strong>Wire Thickness (${r.chosenSection} mm²):</strong> Think of electrical wire like a water pipe. The thicker the wire, the easier electricity flows without overheating. A ${r.chosenSection} mm² cable is selected so your installation operates safely.<br>`;
+                    text += `• <strong>Electrical Load (${r.ib.toFixed(1)} A):</strong> Your electrical equipment demands an electrical "flow" of ${r.ib.toFixed(1)} Amperes. The chosen cable safely supports up to ${r.izReal.toFixed(1)} Amperes under local temperature conditions.<br>`;
+                    text += `• <strong>Distance & Voltage Drop (${r.vdPercent.toFixed(2)}%):</strong> As electricity travels through the ${r.length} meters of wire, a tiny portion of energy is lost. The lost voltage is only ${r.vdVolts.toFixed(2)} Volts, which is well within the acceptable limit of ${r.maxVd}%. Your equipment won't suffer from low voltage issues.`;
+                    return text;
+                }
+
+                // Português (Padrão)
+                let tipoNome = "este circuito";
+                if (r.cType === "lighting") tipoNome = "o circuito de iluminação";
+                if (r.cType === "sockets") tipoNome = "as tomadas";
+                if (r.cType === "motor") tipoNome = "o motor elétrico";
+
+                let condutorNome = r.matCond === "Cu" ? "Cobre" : "Alumínio";
+
+                let text = `<strong>O que estes números significam na prática?</strong><br>`;
+                text += `• <strong>Espessura do Cabo (${r.chosenSection} mm²):</strong> Pense no cabo elétrico como um cano de água. Quanto mais grossa a fiação, mais fácil a eletricidade passa sem aquecer. Para ${tipoNome}, o cabo de <strong>${r.chosenSection} mm² em ${condutorNome}</strong> é o ideal para evitar riscos de curto-circuito ou derretimento.<br>`;
+                text += `• <strong>Fluxo de Energia (${r.ib.toFixed(1)} Amperes):</strong> Seus equipamentos vão puxar uma "corrente" de ${r.ib.toFixed(1)}A. O cabo escolhido aguenta até <strong>${r.izReal.toFixed(1)}A</strong> com folga, mesmo considerando o calor do ambiente e outros cabos juntos no mesmo eletroduto.<br>`;
+                text += `• <strong>Perda de Energia na Distância (${r.vdPercent.toFixed(2)}%):</strong> Ao percorrer os ${r.length} metros de distância, a energia perde apenas <strong>${r.vdVolts.toFixed(1)} Volts</strong> pelo caminho. Isso está dentro do limite seguro de ${r.maxVd}%, garantindo que seus aparelhos funcionem com total potência e sem oscilações na lâmpada ou desligamentos.`;
+                
+                return text;
+            }
+
             updateModalContent() {
                 const r = this.lastResult;
                 if (!r) return;
                 const t = TRANSLATIONS[this.lang];
 
+                const laymanText = this.generateLaymanSummary(r);
+
                 const container = document.getElementById("modal-steps-container");
                 container.innerHTML = `
+                    <div class="step-card ai-card">
+                        <div class="step-title">${t.aiTitle}</div>
+                        <div class="ai-summary-text">${laymanText}</div>
+                    </div>
                     <div class="step-card">
                         <div class="step-title">${t.step1Title}</div>
                         <div>${t.step1Desc}</div>
