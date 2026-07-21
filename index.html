@@ -6,41 +6,42 @@
     <title>Calculadora de Dimensionamento de Condutores NBR 5410</title>
     <style>
         /* ==========================================================================
-           1. ESTILOS GERAIS E VARIÁVEIS DE TEMA (MODO CLARO E ESCURO)
+           1. ESTILOS GERAIS E VARIÁVEIS DE TEMA (PALETA TERROSA: MARROM, TERRACOTA, LARANJA, AMARELO, BEGE)
            ========================================================================== */
         :root {
             --font-main: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            --bg-color: #0f141c;
-            --panel-bg: #1a212d;
-            --panel-border: #2a3447;
-            --text-primary: #e6edf3;
-            --text-secondary: #8b949e;
-            --accent-primary: #0050e6; /* Azul Siemens/Schneider */
-            --accent-hover: #003eb3;
-            --accent-success: #10b981;
-            --accent-warning: #f59e0b;
-            --accent-danger: #ef4444;
-            --input-bg: #121721;
-            --input-border: #30363d;
-            --table-header-bg: #212936;
-            --shadow-color: rgba(0, 0, 0, 0.4);
+            
+            /* Dark Theme (Fundo Marrom Escuro / Destaques Terracota, Laranja e Amarelo) */
+            --bg-color: #1a120c;           /* Marrom muito escuro */
+            --panel-bg: #261b13;         /* Marrom café */
+            --panel-border: #3d2b1f;     /* Marrom médio */
+            --text-primary: #f5ebe0;     /* Bege claro */
+            --text-secondary: #d5bdaf;   /* Bege suave */
+            --accent-primary: #e07a5f;   /* Terracota */
+            --accent-hover: #f4a261;     /* Laranja suave */
+            --accent-success: #e9c46a;   /* Amarelo queimado / Ouro */
+            --accent-warning: #f4a261;   /* Laranja */
+            --accent-danger: #d62828;    /* Terracota intenso/Vermelho terroso */
+            --input-bg: #150e09;          /* Marrom profundo */
+            --input-border: #4a3525;     /* Marrom suave */
+            --shadow-color: rgba(0, 0, 0, 0.5);
         }
 
         [data-theme="light"] {
-            --bg-color: #f4f6f9;
-            --panel-bg: #ffffff;
-            --panel-border: #d0d7de;
-            --text-primary: #1f2328;
-            --text-secondary: #656d76;
-            --accent-primary: #005bda;
-            --accent-hover: #0043a8;
-            --accent-success: #059669;
-            --accent-warning: #d97706;
-            --accent-danger: #dc2626;
-            --input-bg: #ffffff;
-            --input-border: #d0d7de;
-            --table-header-bg: #f6f8fa;
-            --shadow-color: rgba(0, 0, 0, 0.1);
+            /* Light Theme (Fundo Bege / Destaques Terracota, Marrom e Laranja) */
+            --bg-color: #f8f1e7;           /* Bege creme claro */
+            --panel-bg: #ffffff;         /* Branco puro para contraste */
+            --panel-border: #e6ccb2;     /* Bege médio */
+            --text-primary: #3d2b1f;     /* Marrom escuro para texto */
+            --text-secondary: #7f5539;   /* Marrom médio */
+            --accent-primary: #c8553d;   /* Terracota clássico */
+            --accent-hover: #b2432b;     /* Terracota escuro */
+            --accent-success: #d4a373;   /* Bege dourado / Amarelo terroso */
+            --accent-warning: #f4a261;   /* Laranja */
+            --accent-danger: #9e2a2b;    /* Marrom avermelhado */
+            --input-bg: #fefae0;          /* Bege amarelado bem claro */
+            --input-border: #dde5b6;     /* Bege oliva suave */
+            --shadow-color: rgba(61, 43, 31, 0.12);
         }
 
         * {
@@ -92,6 +93,7 @@
             font-size: 1.25rem;
             font-weight: 700;
             letter-spacing: -0.5px;
+            color: var(--text-primary);
         }
 
         .controls {
@@ -115,6 +117,7 @@
 
         .btn-ctrl:hover {
             border-color: var(--accent-primary);
+            color: var(--accent-primary);
         }
 
         /* ==========================================================================
@@ -237,7 +240,7 @@
 
         .metric-card.highlight {
             border-color: var(--accent-primary);
-            background-color: rgba(0, 80, 230, 0.05);
+            background-color: rgba(224, 122, 95, 0.08);
         }
 
         .metric-label {
@@ -300,7 +303,7 @@
         }
 
         .btn-secondary:hover {
-            border-color: var(--text-primary);
+            border-color: var(--accent-primary);
         }
 
         /* ==========================================================================
@@ -339,7 +342,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.7);
+            background-color: rgba(20, 14, 10, 0.8);
             display: flex;
             justify-content: center;
             align-items: center;
@@ -363,7 +366,7 @@
             max-height: 85vh;
             display: flex;
             flex-direction: column;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.6);
         }
 
         .modal-header {
@@ -403,6 +406,7 @@
             font-family: monospace;
             margin: 6px 0;
             border: 1px dashed var(--panel-border);
+            color: var(--text-primary);
         }
 
         /* ==========================================================================
@@ -419,7 +423,6 @@
             color: var(--text-secondary);
         }
 
-        /* Ocultar elementos ao imprimir PDF nativo */
         @media print {
             body { background: white; color: black; padding: 0; }
             header, .controls, .action-btns, footer { display: none !important; }
@@ -459,7 +462,7 @@
         <section class="panel">
             <div class="panel-title">
                 <span id="txt-sec-input">Parâmetros do Circuito</span>
-                <span style="font-size: 0.75rem; color: var(--text-secondary);">NBR 5410[cite: 1]</span>
+                <span style="font-size: 0.75rem; color: var(--text-secondary);">NBR 5410</span>
             </div>
 
             <div class="form-grid">
@@ -529,15 +532,15 @@
 
                 <!-- Método de Instalação -->
                 <div class="form-group full-width">
-                    <label id="lbl-install-method">Método de Instalação (Tabela 33)[cite: 1]</label>
+                    <label id="lbl-install-method">Método de Instalação (Tabela 33)</label>
                     <select id="in-install-method" onchange="app.calculate()">
-                        <option value="B1" selected>B1 - Condutores isolados em eletroduto aparente de seção circular[cite: 1]</option>
-                        <option value="A1">A1 - Condutores isolados em eletroduto embutido em parede termicamente isolante[cite: 1]</option>
-                        <option value="B2">B2 - Cabo multipolar em eletroduto aparente de seção circular[cite: 1]</option>
-                        <option value="C">C - Cabos unipolares ou multipolar sobre parede de madeira[cite: 1]</option>
-                        <option value="D">D - Cabo multipolar em eletroduto enterrado no solo[cite: 1]</option>
-                        <option value="E">E - Cabo multipolar ao ar livre[cite: 1]</option>
-                        <option value="F">F - Cabos unipolares justapostos ao ar livre[cite: 1]</option>
+                        <option value="B1" selected>B1 - Condutores isolados em eletroduto aparente de seção circular</option>
+                        <option value="A1">A1 - Condutores isolados em eletroduto embutido em parede termicamente isolante</option>
+                        <option value="B2">B2 - Cabo multipolar em eletroduto aparente de seção circular</option>
+                        <option value="C">C - Cabos unipolares ou multipolar sobre parede de madeira</option>
+                        <option value="D">D - Cabo multipolar em eletroduto enterrado no solo</option>
+                        <option value="E">E - Cabo multipolar ao ar livre</option>
+                        <option value="F">F - Cabos unipolares justapostos ao ar livre</option>
                     </select>
                 </div>
 
@@ -570,7 +573,7 @@
 
                 <!-- Queda de Tensão Máxima -->
                 <div class="form-group full-width">
-                    <label id="lbl-max-vd">Queda de Tensão Máxima Permitida (%)[cite: 1]</label>
+                    <label id="lbl-max-vd">Queda de Tensão Máxima Permitida (%)</label>
                     <input type="number" id="in-max-vd" value="4.0" min="0.5" max="10.0" step="0.1" oninput="app.calculate()">
                 </div>
             </div>
@@ -580,7 +583,7 @@
         <section class="panel">
             <div class="panel-title">
                 <span id="txt-sec-results">Resultado do Dimensionamento</span>
-                <span id="status-badge" style="font-size:0.75rem; padding: 2px 8px; border-radius: 12px; background: var(--accent-success); color: white;">OK</span>
+                <span id="status-badge" style="font-size:0.75rem; padding: 2px 8px; border-radius: 12px; background: var(--accent-primary); color: white;">OK</span>
             </div>
 
             <div class="results-grid">
@@ -641,7 +644,7 @@
     <div class="modal-overlay" id="calc-modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h3 style="color: var(--accent-primary);" id="txt-modal-title">Memória de Cálculo Detalhada (ABNT NBR 5410)[cite: 1]</h3>
+                <h3 style="color: var(--accent-primary);" id="txt-modal-title">Memória de Cálculo Detalhada (ABNT NBR 5410)</h3>
                 <button class="btn-ctrl" onclick="app.closeModal()">✕</button>
             </div>
             <div class="modal-body" id="modal-steps-container">
@@ -653,40 +656,27 @@
     <!-- RODAPÉ E AVISO LEGAL -->
     <footer>
         <p id="txt-disclaimer">
-            Esta calculadora foi desenvolvida exclusivamente para fins educacionais. Apesar de seguir os critérios da ABNT NBR 5410, os resultados devem sempre ser conferidos por um profissional habilitado[cite: 1].
+            Esta calculadora foi desenvolvida exclusivamente para fins educacionais. Apesar de seguir os critérios da ABNT NBR 5410, os resultados devem sempre ser conferidos por um profissional habilitado.
         </p>
     </footer>
 
-    <!-- LOGICA DE PROCESSAMENTO EM C++ / JAVASCRIPT EMULADO -->
+    <!-- LÓGICA DE PROCESSAMENTO -->
     <script>
-        /**
-         * ==========================================================================
-         * CORE ENGINE DE CÁLCULO NBR 5410[cite: 1]
-         * Organizado de forma modular simulando um motor C++ compilado em WebAssembly[cite: 1]
-         * ==========================================================================
-         */
         const NBR5410_DATA = {
-            // Tabelas de Seções Mínimas (Item 6.2.6.1.1)[cite: 1]
             minSections: {
                 lighting: 1.5,
                 sockets: 2.5,
                 motor: 2.5,
                 general: 2.5
             },
-
-            // Resisitividades do condutor (ohm.mm²/m) a 20°C e coeficientes térmicos[cite: 1]
             resistivity: {
                 Cu: 0.0178,
                 Al: 0.0282
             },
-
-            // Tabela 36 - Fatores de correção para temperaturas ambientes diferentes de 30°C[cite: 1]
             tempFactors: {
                 PVC:  { 10: 1.22, 15: 1.17, 20: 1.12, 25: 1.06, 30: 1.00, 35: 0.94, 40: 0.87, 45: 0.79, 50: 0.71, 55: 0.61, 60: 0.50 },
                 XLPE: { 10: 1.15, 15: 1.12, 20: 1.08, 25: 1.04, 30: 1.00, 35: 0.96, 40: 0.91, 45: 0.87, 50: 0.82, 55: 0.76, 60: 0.71 }
             },
-
-            // Tabela 42 - Fatores de correção para agrupamento de circuitos (Método B1/B2)[cite: 1]
             groupingFactors: {
                 1: 1.00,
                 2: 0.80,
@@ -694,9 +684,6 @@
                 4: 0.65,
                 5: 0.60
             },
-
-            // Tabelas de Capacidade de Condução de Corrente (A) - Cobre (Tabela 36 e 37 da NBR)[cite: 1]
-            // Método B1 (2 e 3 condutores carregados - PVC)[cite: 1]
             capacities: {
                 Cu: {
                     PVC: {
@@ -841,7 +828,6 @@
             }
 
             calculate() {
-                // Entrada de dados
                 const circuitType = document.getElementById("in-circuit-type").value;
                 const voltage = parseFloat(document.getElementById("in-voltage-val").value);
                 const system = document.getElementById("in-system").value;
@@ -857,7 +843,6 @@
                 const length = parseFloat(document.getElementById("in-length").value) || 0;
                 const maxVd = parseFloat(document.getElementById("in-max-vd").value) || 4.0;
 
-                // 1. Cálculo da Corrente de Projeto (Ib)[cite: 1]
                 let powerW = powerVal;
                 if (powerUnit === "kW") powerW *= 1000;
                 
@@ -867,24 +852,19 @@
                 } else {
                     if (system === "mono" || system === "bi") {
                         Ib = powerW / (voltage * fp);
-                    } else { // Trifásico
+                    } else {
                         Ib = powerW / (Math.sqrt(3) * voltage * fp);
                     }
                 }
 
-                // 2. Obtenção dos Fatores de Correção (Tabelas 36 e 42)[cite: 1]
                 const fTemp = NBR5410_DATA.tempFactors[matIso][temp] || 1.0;
                 const fGroup = NBR5410_DATA.groupingFactors[grouping] || 1.0;
                 const fCorrection = fTemp * fGroup;
-
-                // Corrente corrigida projetada
                 const Ib_corrected = Ib / fCorrection;
 
-                // 3. Aplicação da Seção Mínima da Norma (Item 6.2.6)[cite: 1]
                 let minSectionNorm = NBR5410_DATA.minSections[circuitType] || 1.5;
-                if (matCond === "Al" && minSectionNorm < 16) minSectionNorm = 16; // Restrição de Alumínio (Item 6.2.3.7)[cite: 1]
+                if (matCond === "Al" && minSectionNorm < 16) minSectionNorm = 16;
 
-                // 4. Dimensionamento pela Capacidade de Condução de Corrente (Critério Ampacidade)[cite: 1]
                 const capTable = NBR5410_DATA.capacities[matCond][matIso]["B1"][loadedCond];
                 let selectedSectionAmpacity = minSectionNorm;
                 let Iz = 0;
@@ -898,7 +878,6 @@
                     }
                 }
 
-                // 5. Dimensionamento pela Queda de Tensão (Item 6.2.7)[cite: 1]
                 const rho = NBR5410_DATA.resistivity[matCond];
                 let selectedSectionVd = selectedSectionAmpacity;
                 let calculatedVdPercent = 0;
@@ -907,8 +886,6 @@
                 for (let section of availableSections) {
                     if (section < selectedSectionAmpacity) continue;
 
-                    // Queda de Tensão ΔU = (k * rho * L * Ib * cosphi) / S[cite: 1]
-                    // k = 2 para Monofásico/Bifásico, k = sqrt(3) para Trifásico[cite: 1]
                     const k = (system === "tri") ? Math.sqrt(3) : 2.0;
                     calculatedVdVolts = (k * rho * length * Ib * fp) / section;
                     calculatedVdPercent = (calculatedVdVolts / voltage) * 100;
@@ -919,7 +896,6 @@
                     }
                 }
 
-                // Bitola Final e Critério Limitante
                 const finalSection = Math.max(selectedSectionAmpacity, selectedSectionVd);
                 let limitingCriterion = "Capacidade de Condução";
                 if (finalSection > selectedSectionAmpacity) {
@@ -931,7 +907,6 @@
                 const finalIz = (capTable[finalSection] || 0) * fCorrection;
                 const capacityReserve = finalIz > 0 ? (((finalIz - Ib) / finalIz) * 100).toFixed(1) : 0;
 
-                // Salvar estado
                 this.lastResult = {
                     Ib: Ib.toFixed(2),
                     Ib_corrected: Ib_corrected.toFixed(2),
@@ -949,7 +924,6 @@
                     maxVd
                 };
 
-                // Atualizar DOM
                 document.getElementById("res-section").innerText = `${finalSection} mm²`;
                 document.getElementById("res-limiting-criterion").innerText = `Critério: ${limitingCriterion}`;
                 document.getElementById("res-iz").innerText = `${finalIz.toFixed(1)} A`;
@@ -967,7 +941,7 @@
 
                 const { Ib, finalIz, vdPercent, maxVd } = this.lastResult;
 
-                // 1. Gráfico Gauge SVG (Ocupação Térmica)
+                // Gauge SVG
                 const ratio = Math.min(parseFloat(Ib) / parseFloat(finalIz), 1.0) || 0;
                 const strokeDash = (ratio * 283).toFixed(1);
                 const gaugeSvg = `
@@ -980,10 +954,10 @@
                 `;
                 document.getElementById("svg-gauge").outerHTML = gaugeSvg;
 
-                // 2. Gráfico Barra SVG (Queda de Tensão)
+                // Barra SVG
                 const vdRatio = Math.min(parseFloat(vdPercent) / parseFloat(maxVd), 1.0) || 0;
                 const barHeight = (vdRatio * 80).toFixed(1);
-                const barColor = vdRatio > 0.9 ? "var(--accent-danger)" : "var(--accent-success)";
+                const barColor = vdRatio > 0.9 ? "var(--accent-danger)" : "var(--accent-primary)";
                 const barSvg = `
                     <svg id="svg-bar" width="120" height="120" viewBox="0 0 120 120">
                         <rect x="45" y="20" width="30" height="80" fill="var(--panel-border)" rx="4"/>
@@ -1003,23 +977,23 @@
                 container.innerHTML = `
                     <div class="step-card">
                         <div class="step-title">Etapa 1: Corrente de Projeto (Ib)</div>
-                        <div>Cálculo da corrente nominal absorvida pelo circuito[cite: 1]:</div>
+                        <div>Cálculo da corrente nominal absorvida pelo circuito:</div>
                         <div class="formula-box">Ib = Potência / (V * cos φ) = ${res.Ib} A</div>
                     </div>
                     <div class="step-card">
                         <div class="step-title">Etapa 2: Aplicação dos Fatores de Correção</div>
-                        <div>Correção térmica e agrupamento conforme Tabelas 36 e 42 da NBR 5410[cite: 1]:</div>
+                        <div>Correção térmica e agrupamento conforme Tabelas 36 e 42 da NBR 5410:</div>
                         <div class="formula-box">Fator Comb. = Temp (${res.fTemp}) * Agrup (${res.fGroup}) = ${res.fCorrection}</div>
                         <div class="formula-box">Ib Corrigida = Ib / Fator Comb. = ${res.Ib_corrected} A</div>
                     </div>
                     <div class="step-card">
                         <div class="step-title">Etapa 3: Critério da Ampacidade (Capacidade de Condução)</div>
-                        <div>Consulta das tabelas oficiais de condutores de acordo com a isolação e método[cite: 1]:</div>
+                        <div>Consulta das tabelas oficiais de condutores de acordo com a isolação e método:</div>
                         <div class="formula-box">Capacidade Requerida (Iz) ≥ ${res.Ib_corrected} A</div>
                     </div>
                     <div class="step-card">
                         <div class="step-title">Etapa 4: Verificação da Queda de Tensão (ΔU)</div>
-                        <div>Cálculo da resistência e queda de tensão percentual[cite: 1]:</div>
+                        <div>Cálculo da resistência e queda de tensão percentual:</div>
                         <div class="formula-box">ΔU Calculada = ${res.vdVolts} V (${res.vdPercent}%) | Máximo Permitido = ${res.maxVd}%</div>
                     </div>
                     <div class="step-card" style="border-left-color: var(--accent-success);">
@@ -1040,7 +1014,6 @@
             }
         }
 
-        // Inicializar aplicação
         const app = new Application();
     </script>
 </body>
