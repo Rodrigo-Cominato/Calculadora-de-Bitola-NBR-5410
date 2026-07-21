@@ -439,8 +439,12 @@
             border: 2px solid var(--accent-primary);
         }
 
+        .print-only-footer {
+            display: none;
+        }
+
         /* ==========================================================================
-           8. ESTILOS DE IMPRESSÃO E PDF (CORRIGIDO PARA EXACTAMENTE 2 PÁGINAS)
+           8. ESTILOS DE IMPRESSÃO (EXATAMENTE 2 PÁGINAS CENTRALIZADAS COM FOTOS E AVISOS)
            ========================================================================== */
         @media print {
             @page {
@@ -448,31 +452,43 @@
                 margin: 8mm;
             }
 
-            body { 
-                background: white !important; 
-                color: black !important; 
+            html, body {
+                background: white !important;
+                color: black !important;
                 padding: 0 !important;
                 margin: 0 !important;
-                display: block !important;
+                width: 100% !important;
+                height: 100% !important;
             }
 
             header .controls, .action-btns { 
                 display: none !important; 
             }
 
+            /* --- PÁGINA 1: CALCULADORA --- */
+            .print-page-1 {
+                display: flex !important;
+                flex-direction: column !important;
+                justify-content: space-between !important;
+                height: 100vh !important;
+                box-sizing: border-box !important;
+                page-break-after: always !important;
+                padding: 5mm 0 !important;
+            }
+
             header {
                 box-shadow: none;
                 border: 1px solid #ccc;
-                margin-bottom: 10px;
                 padding: 10px 15px;
+                margin-bottom: 10px;
             }
 
             main {
                 display: grid !important;
                 grid-template-columns: 1fr 1fr !important;
-                gap: 10px !important;
-                align-items: start !important;
-                min-height: auto !important;
+                gap: 12px !important;
+                align-items: center !important;
+                flex-grow: 1 !important;
             }
 
             .panel { 
@@ -482,24 +498,27 @@
                 margin-bottom: 0;
             }
 
-            /* Forçar a Página 1 a terminar após o Footer */
             footer {
                 border: 1px solid #ccc;
                 margin-top: 10px;
                 padding: 10px 15px;
-                page-break-after: always !important;
+                background: white !important;
             }
 
-            /* Forçar a Memória de Cálculo a ser a Página 2 isolada */
+            /* --- PÁGINA 2: MEMÓRIA DE CÁLCULO --- */
             .modal-overlay { 
-                position: relative !important; 
+                position: static !important; 
                 opacity: 1 !important; 
                 pointer-events: auto !important; 
                 background: none !important;
-                display: block !important;
+                display: flex !important;
+                flex-direction: column !important;
+                justify-content: space-between !important;
+                height: 100vh !important;
                 width: 100% !important;
-                height: auto !important;
-                page-break-before: auto !important;
+                box-sizing: border-box !important;
+                padding: 5mm 0 !important;
+                page-break-before: always !important;
             }
 
             .modal-content { 
@@ -507,8 +526,9 @@
                 width: 100% !important;
                 border: 1px solid #ccc !important; 
                 box-shadow: none !important;
-                margin: 0 auto !important;
+                margin: auto 0 !important;
                 max-height: none !important;
+                background: white !important;
             }
 
             .modal-header .btn-ctrl {
@@ -520,230 +540,245 @@
                 padding: 15px;
             }
 
+            .print-only-footer {
+                display: flex !important;
+                border: 1px solid #ccc;
+                padding: 10px 15px;
+                align-items: center;
+                justify-content: space-between;
+                gap: 15px;
+                font-size: 0.8rem;
+                background: white !important;
+            }
+
             .profile-thumb {
-                border-color: #333;
+                border-color: #333 !important;
+                display: block !important;
             }
         }
     </style>
 </head>
 <body>
 
-    <!-- CABEÇALHO COM CONTROLES -->
-    <header>
-        <div class="brand">
-            <svg class="brand-logo" viewBox="0 0 24 24">
-                <path d="M11 15H6l7-14v8h5l-7 14v-8z"/>
-            </svg>
-            <div>
-                <h1 id="txt-title">Dimensionamento NBR 5410</h1>
-                <span style="font-size: 0.75rem; color: var(--text-secondary);" id="txt-subtitle">Calculadora Técnica Oficial</span>
-            </div>
-        </div>
-        <div class="controls">
-            <button class="btn-ctrl" id="btn-lang" onclick="app.toggleLanguage()">
-                <span>🌐</span> <span id="txt-lang-label">EN</span>
-            </button>
-            <button class="btn-ctrl" id="btn-theme" onclick="app.toggleTheme()">
-                <span id="theme-icon">☀️</span> <span id="txt-theme-label">Claro</span>
-            </button>
-        </div>
-    </header>
-
-    <!-- CONTEÚDO PRINCIPAL -->
-    <main>
-        <!-- PAINEL DE ENTRADA -->
-        <section class="panel">
-            <div class="panel-title">
-                <span id="txt-sec-input">Parâmetros do Circuito</span>
-                <span style="font-size: 0.75rem; color: var(--text-secondary);">NBR 5410</span>
-            </div>
-
-            <div class="form-grid">
-                <!-- Tipo de Circuito -->
-                <div class="form-group">
-                    <label id="lbl-circuit-type">Tipo de Circuito</label>
-                    <select id="in-circuit-type" onchange="app.calculate()">
-                        <option value="lighting" id="opt-type-lighting">Iluminação</option>
-                        <option value="sockets" id="opt-type-sockets">Tomadas (TUG/TUE)</option>
-                        <option value="motor" id="opt-type-motor">Motores</option>
-                        <option value="general" id="opt-type-general" selected>Carga Geral</option>
-                    </select>
-                </div>
-
-                <!-- Tensão e Sistema -->
-                <div class="form-group">
-                    <label id="lbl-voltage">Tensão / Sistema</label>
-                    <div class="input-group">
-                        <select id="in-voltage-val" onchange="app.calculate()">
-                            <option value="127">127 V</option>
-                            <option value="220" selected>220 V</option>
-                            <option value="380">380 V</option>
-                        </select>
-                        <select id="in-system" onchange="app.calculate()">
-                            <option value="mono">F+N</option>
-                            <option value="bi">F+F</option>
-                            <option value="tri" selected>3F</option>
-                        </select>
-                    </div>
-                </div>
-
-                <!-- Potência / Carga -->
-                <div class="form-group">
-                    <label id="lbl-power">Potência / Carga</label>
-                    <div class="input-group">
-                        <input type="number" id="in-power-val" value="5000" min="1" step="any" oninput="app.calculate()">
-                        <select id="in-power-unit" onchange="app.calculate()">
-                            <option value="W">W</option>
-                            <option value="kW" selected>kW</option>
-                            <option value="VA">VA</option>
-                            <option value="kVA">kVA</option>
-                            <option value="A">A (Ib)</option>
-                        </select>
-                    </div>
-                </div>
-
-                <!-- Fator de Potência -->
-                <div class="form-group">
-                    <label id="lbl-fp">Fator de Potência (cos φ)</label>
-                    <input type="number" id="in-fp" value="0.95" min="0.1" max="1.0" step="0.01" oninput="app.calculate()">
-                </div>
-
-                <!-- Condutor e Isolação -->
-                <div class="form-group">
-                    <label id="lbl-material">Condutor / Isolação</label>
-                    <div class="input-group">
-                        <select id="in-mat-cond" onchange="app.calculate()">
-                            <option value="Cu" id="opt-mat-cu" selected>Cobre (Cu)</option>
-                            <option value="Al" id="opt-mat-al">Alumínio (Al)</option>
-                        </select>
-                        <select id="in-mat-iso" onchange="app.calculate()">
-                            <option value="PVC" selected>PVC (70°C)</option>
-                            <option value="XLPE">XLPE/EPR (90°C)</option>
-                        </select>
-                    </div>
-                </div>
-
-                <!-- Método de Instalação -->
-                <div class="form-group full-width">
-                    <label id="lbl-install-method">Método de Instalação (Tabela 33)</label>
-                    <select id="in-install-method" onchange="app.calculate()">
-                        <option value="B1" id="opt-inst-b1" selected>B1 - Condutores isolados em eletroduto aparente de seção circular</option>
-                        <option value="A1" id="opt-inst-a1">A1 - Condutores isolados em eletroduto embutido em parede termicamente isolante</option>
-                        <option value="B2" id="opt-inst-b2">B2 - Cabo multipolar em eletroduto aparente de seção circular</option>
-                        <option value="C" id="opt-inst-c">C - Cabos unipolares ou multipolar sobre parede de madeira</option>
-                        <option value="D" id="opt-inst-d">D - Cabo multipolar em eletroduto enterrado no solo</option>
-                        <option value="E" id="opt-inst-e">E - Cabo multipolar ao ar livre</option>
-                        <option value="F" id="opt-inst-f">F - Cabos unipolares justapostos ao ar livre</option>
-                    </select>
-                </div>
-
-                <!-- Agrupamento e Condutores Carregados -->
-                <div class="form-group">
-                    <label id="lbl-grouping">Agrupamento / Cond. Carregados</label>
-                    <div class="input-group">
-                        <select id="in-grouping" onchange="app.calculate()">
-                            <option value="1" id="opt-group-1" selected>1 Circuito</option>
-                            <option value="2" id="opt-group-2">2 Circuitos</option>
-                            <option value="3" id="opt-group-3">3 Circuitos</option>
-                            <option value="4" id="opt-group-4">4 Circuitos</option>
-                            <option value="5" id="opt-group-5">5+ Circuitos</option>
-                        </select>
-                        <select id="in-loaded-cond" onchange="app.calculate()">
-                            <option value="2" id="opt-cond-2">2 Cond.</option>
-                            <option value="3" id="opt-cond-3" selected>3 Cond.</option>
-                        </select>
-                    </div>
-                </div>
-
-                <!-- Temp. Ambiente e Comprimento -->
-                <div class="form-group">
-                    <label id="lbl-temp-length">Temp. (°C) / Comprimento (m)</label>
-                    <div class="input-group">
-                        <input type="number" id="in-temp" value="30" min="10" max="60" oninput="app.calculate()">
-                        <input type="number" id="in-length" value="35" min="1" max="1000" oninput="app.calculate()">
-                    </div>
-                </div>
-
-                <!-- Queda de Tensão Máxima -->
-                <div class="form-group full-width">
-                    <label id="lbl-max-vd">Queda de Tensão Máxima Permitida (%)</label>
-                    <input type="number" id="in-max-vd" value="4.0" min="0.5" max="10.0" step="0.1" oninput="app.calculate()">
+    <!-- CONTAINER DA PÁGINA 1 -->
+    <div class="print-page-1">
+        <!-- CABEÇALHO COM CONTROLES -->
+        <header>
+            <div class="brand">
+                <svg class="brand-logo" viewBox="0 0 24 24">
+                    <path d="M11 15H6l7-14v8h5l-7 14v-8z"/>
+                </svg>
+                <div>
+                    <h1 id="txt-title">Dimensionamento NBR 5410</h1>
+                    <span style="font-size: 0.75rem; color: var(--text-secondary);" id="txt-subtitle">Calculadora Técnica Oficial</span>
                 </div>
             </div>
-        </section>
-
-        <!-- PAINEL DE RESULTADOS -->
-        <section class="panel">
-            <div class="panel-title">
-                <span id="txt-sec-results">Resultado do Dimensionamento</span>
-                <span id="status-badge" style="font-size:0.75rem; padding: 2px 8px; border-radius: 12px; background: var(--accent-primary); color: white;">OK</span>
-            </div>
-
-            <div class="results-grid">
-                <!-- Bitola Mínima Requerida -->
-                <div class="metric-card highlight">
-                    <span class="metric-label" id="lbl-res-section">Bitola Recomendada</span>
-                    <span class="metric-value" id="res-section">-- mm²</span>
-                    <span class="metric-sub" id="res-limiting-criterion">Critério: --</span>
-                </div>
-
-                <!-- Corrente Admissível -->
-                <div class="metric-card">
-                    <span class="metric-label" id="lbl-res-iz">Capacidade do Cabo (Iz)</span>
-                    <span class="metric-value" id="res-iz">-- A</span>
-                    <span class="metric-sub" id="res-ib">Corrente de Projeto (Ib): -- A</span>
-                </div>
-
-                <!-- Queda de Tensão Calculada -->
-                <div class="metric-card">
-                    <span class="metric-label" id="lbl-res-vd">Queda de Tensão (ΔU)</span>
-                    <span class="metric-value" id="res-vd">-- %</span>
-                    <span class="metric-sub" id="res-vd-volts">-- V</span>
-                </div>
-
-                <!-- Reserva de Capacidade -->
-                <div class="metric-card">
-                    <span class="metric-label" id="lbl-res-reserve">Reserva de Capacidade</span>
-                    <span class="metric-value" id="res-reserve">-- %</span>
-                    <span class="metric-sub" id="res-fct-combined">Fator Correção Total: --</span>
-                </div>
-            </div>
-
-            <!-- GRÁFICOS SVG -->
-            <div class="charts-container">
-                <div class="chart-box">
-                    <h4 id="lbl-chart-occ">Ocupação Térmica (Ib / Iz)</h4>
-                    <svg id="svg-gauge" width="120" height="120" viewBox="0 0 120 120"></svg>
-                </div>
-                <div class="chart-box">
-                    <h4 id="lbl-chart-vd">Queda de Tensão Relativa</h4>
-                    <svg id="svg-bar" width="120" height="120" viewBox="0 0 120 120"></svg>
-                </div>
-            </div>
-
-            <!-- BOTÕES DE AÇÃO -->
-            <div class="action-btns">
-                <button class="btn-action btn-primary" onclick="app.openModal()">
-                    <span>📝</span> <span id="btn-txt-calc-memory">Memória de Cálculo</span>
+            <div class="controls">
+                <button class="btn-ctrl" id="btn-lang" onclick="app.toggleLanguage()">
+                    <span>🌐</span> <span id="txt-lang-label">EN</span>
                 </button>
-                <button class="btn-action btn-secondary" onclick="app.exportPDF()">
-                    <span>📄</span> <span id="btn-txt-pdf">Exportar PDF</span>
+                <button class="btn-ctrl" id="btn-theme" onclick="app.toggleTheme()">
+                    <span id="theme-icon">☀️</span> <span id="txt-theme-label">Claro</span>
                 </button>
             </div>
-        </section>
-    </main>
+        </header>
 
-    <!-- RODAPÉ -->
-    <footer>
-        <div class="footer-content">
-            <p id="txt-disclaimer">
-                Esta calculadora foi desenvolvida exclusivamente para fins educacionais. Apesar de seguir os critérios da ABNT NBR 5410, os resultados devem sempre ser conferidos por um profissional habilitado.
-            </p>
-        </div>
-        <img src="foto_rodrigo.png" alt="Rodrigo" class="profile-thumb" onerror="this.style.display='none'">
-    </footer>
+        <!-- CONTEÚDO PRINCIPAL -->
+        <main>
+            <!-- PAINEL DE ENTRADA -->
+            <section class="panel">
+                <div class="panel-title">
+                    <span id="txt-sec-input">Parâmetros do Circuito</span>
+                    <span style="font-size: 0.75rem; color: var(--text-secondary);">NBR 5410</span>
+                </div>
 
-    <!-- MODAL DE MEMÓRIA DE CÁLCULO (INCLUÍDO NO PDF NA PÁGINA 2) -->
+                <div class="form-grid">
+                    <!-- Tipo de Circuito -->
+                    <div class="form-group">
+                        <label id="lbl-circuit-type">Tipo de Circuito</label>
+                        <select id="in-circuit-type" onchange="app.calculate()">
+                            <option value="lighting" id="opt-type-lighting">Iluminação</option>
+                            <option value="sockets" id="opt-type-sockets">Tomadas (TUG/TUE)</option>
+                            <option value="motor" id="opt-type-motor">Motores</option>
+                            <option value="general" id="opt-type-general" selected>Carga Geral</option>
+                        </select>
+                    </div>
+
+                    <!-- Tensão e Sistema -->
+                    <div class="form-group">
+                        <label id="lbl-voltage">Tensão / Sistema</label>
+                        <div class="input-group">
+                            <select id="in-voltage-val" onchange="app.calculate()">
+                                <option value="127">127 V</option>
+                                <option value="220" selected>220 V</option>
+                                <option value="380">380 V</option>
+                            </select>
+                            <select id="in-system" onchange="app.calculate()">
+                                <option value="mono">F+N</option>
+                                <option value="bi">F+F</option>
+                                <option value="tri" selected>3F</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Potência / Carga -->
+                    <div class="form-group">
+                        <label id="lbl-power">Potência / Carga</label>
+                        <div class="input-group">
+                            <input type="number" id="in-power-val" value="5000" min="1" step="any" oninput="app.calculate()">
+                            <select id="in-power-unit" onchange="app.calculate()">
+                                <option value="W">W</option>
+                                <option value="kW" selected>kW</option>
+                                <option value="VA">VA</option>
+                                <option value="kVA">kVA</option>
+                                <option value="A">A (Ib)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Fator de Potência -->
+                    <div class="form-group">
+                        <label id="lbl-fp">Fator de Potência (cos φ)</label>
+                        <input type="number" id="in-fp" value="0.95" min="0.1" max="1.0" step="0.01" oninput="app.calculate()">
+                    </div>
+
+                    <!-- Condutor e Isolação -->
+                    <div class="form-group">
+                        <label id="lbl-material">Condutor / Isolação</label>
+                        <div class="input-group">
+                            <select id="in-mat-cond" onchange="app.calculate()">
+                                <option value="Cu" id="opt-mat-cu" selected>Cobre (Cu)</option>
+                                <option value="Al" id="opt-mat-al">Alumínio (Al)</option>
+                            </select>
+                            <select id="in-mat-iso" onchange="app.calculate()">
+                                <option value="PVC" selected>PVC (70°C)</option>
+                                <option value="XLPE">XLPE/EPR (90°C)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Método de Instalação -->
+                    <div class="form-group full-width">
+                        <label id="lbl-install-method">Método de Instalação (Tabela 33)</label>
+                        <select id="in-install-method" onchange="app.calculate()">
+                            <option value="B1" id="opt-inst-b1" selected>B1 - Condutores isolados em eletroduto aparente de seção circular</option>
+                            <option value="A1" id="opt-inst-a1">A1 - Condutores isolados em eletroduto embutido em parede termicamente isolante</option>
+                            <option value="B2" id="opt-inst-b2">B2 - Cabo multipolar em eletroduto aparente de seção circular</option>
+                            <option value="C" id="opt-inst-c">C - Cabos unipolares ou multipolar sobre parede de madeira</option>
+                            <option value="D" id="opt-inst-d">D - Cabo multipolar em eletroduto enterrado no solo</option>
+                            <option value="E" id="opt-inst-e">E - Cabo multipolar ao ar livre</option>
+                            <option value="F" id="opt-inst-f">F - Cabos unipolares justapostos ao ar livre</option>
+                        </select>
+                    </div>
+
+                    <!-- Agrupamento e Condutores Carregados -->
+                    <div class="form-group">
+                        <label id="lbl-grouping">Agrupamento / Cond. Carregados</label>
+                        <div class="input-group">
+                            <select id="in-grouping" onchange="app.calculate()">
+                                <option value="1" id="opt-group-1" selected>1 Circuito</option>
+                                <option value="2" id="opt-group-2">2 Circuitos</option>
+                                <option value="3" id="opt-group-3">3 Circuitos</option>
+                                <option value="4" id="opt-group-4">4 Circuitos</option>
+                                <option value="5" id="opt-group-5">5+ Circuitos</option>
+                            </select>
+                            <select id="in-loaded-cond" onchange="app.calculate()">
+                                <option value="2" id="opt-cond-2">2 Cond.</option>
+                                <option value="3" id="opt-cond-3" selected>3 Cond.</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Temp. Ambiente e Comprimento -->
+                    <div class="form-group">
+                        <label id="lbl-temp-length">Temp. (°C) / Comprimento (m)</label>
+                        <div class="input-group">
+                            <input type="number" id="in-temp" value="30" min="10" max="60" oninput="app.calculate()">
+                            <input type="number" id="in-length" value="35" min="1" max="1000" oninput="app.calculate()">
+                        </div>
+                    </div>
+
+                    <!-- Queda de Tensão Máxima -->
+                    <div class="form-group full-width">
+                        <label id="lbl-max-vd">Queda de Tensão Máxima Permitida (%)</label>
+                        <input type="number" id="in-max-vd" value="4.0" min="0.5" max="10.0" step="0.1" oninput="app.calculate()">
+                    </div>
+                </div>
+            </section>
+
+            <!-- PAINEL DE RESULTADOS -->
+            <section class="panel">
+                <div class="panel-title">
+                    <span id="txt-sec-results">Resultado do Dimensionamento</span>
+                    <span id="status-badge" style="font-size:0.75rem; padding: 2px 8px; border-radius: 12px; background: var(--accent-primary); color: white;">OK</span>
+                </div>
+
+                <div class="results-grid">
+                    <!-- Bitola Mínima Requerida -->
+                    <div class="metric-card highlight">
+                        <span class="metric-label" id="lbl-res-section">Bitola Recomendada</span>
+                        <span class="metric-value" id="res-section">-- mm²</span>
+                        <span class="metric-sub" id="res-limiting-criterion">Critério: --</span>
+                    </div>
+
+                    <!-- Corrente Admissível -->
+                    <div class="metric-card">
+                        <span class="metric-label" id="lbl-res-iz">Capacidade do Cabo (Iz)</span>
+                        <span class="metric-value" id="res-iz">-- A</span>
+                        <span class="metric-sub" id="res-ib">Corrente de Projeto (Ib): -- A</span>
+                    </div>
+
+                    <!-- Queda de Tensão Calculada -->
+                    <div class="metric-card">
+                        <span class="metric-label" id="lbl-res-vd">Queda de Tensão (ΔU)</span>
+                        <span class="metric-value" id="res-vd">-- %</span>
+                        <span class="metric-sub" id="res-vd-volts">-- V</span>
+                    </div>
+
+                    <!-- Reserva de Capacidade -->
+                    <div class="metric-card">
+                        <span class="metric-label" id="lbl-res-reserve">Reserva de Capacidade</span>
+                        <span class="metric-value" id="res-reserve">-- %</span>
+                        <span class="metric-sub" id="res-fct-combined">Fator Correção Total: --</span>
+                    </div>
+                </div>
+
+                <!-- GRÁFICOS SVG -->
+                <div class="charts-container">
+                    <div class="chart-box">
+                        <h4 id="lbl-chart-occ">Ocupação Térmica (Ib / Iz)</h4>
+                        <svg id="svg-gauge" width="120" height="120" viewBox="0 0 120 120"></svg>
+                    </div>
+                    <div class="chart-box">
+                        <h4 id="lbl-chart-vd">Queda de Tensão Relativa</h4>
+                        <svg id="svg-bar" width="120" height="120" viewBox="0 0 120 120"></svg>
+                    </div>
+                </div>
+
+                <!-- BOTÕES DE AÇÃO -->
+                <div class="action-btns">
+                    <button class="btn-action btn-primary" onclick="app.openModal()">
+                        <span>📝</span> <span id="btn-txt-calc-memory">Memória de Cálculo</span>
+                    </button>
+                    <button class="btn-action btn-secondary" onclick="app.exportPDF()">
+                        <span>📄</span> <span id="btn-txt-pdf">Exportar PDF</span>
+                    </button>
+                </div>
+            </section>
+        </main>
+
+        <!-- RODAPÉ PÁGINA 1 -->
+        <footer>
+            <div class="footer-content">
+                <p class="txt-disclaimer">
+                    Esta calculadora foi desenvolvida exclusivamente para fins educacionais. Apesar de seguir os critérios da ABNT NBR 5410, os resultados devem sempre ser conferidos por um profissional habilitado.
+                </p>
+            </div>
+            <img src="foto_rodrigo.png" alt="Rodrigo" class="profile-thumb" onerror="this.style.display='none'">
+        </footer>
+    </div>
+
+    <!-- MODAL / PÁGINA 2 DE MEMÓRIA DE CÁLCULO -->
     <div class="modal-overlay" id="calc-modal">
         <div class="modal-content">
             <div class="modal-header">
@@ -753,6 +788,16 @@
             <div class="modal-body" id="modal-steps-container">
                 <!-- Etapas injetadas via JS -->
             </div>
+        </div>
+
+        <!-- RODAPÉ EXCLUSIVO DE IMPRESSÃO (PÁGINA 2) -->
+        <div class="print-only-footer">
+            <div class="footer-content">
+                <p class="txt-disclaimer">
+                    Esta calculadora foi desenvolvida exclusivamente para fins educacionais. Apesar de seguir os critérios da ABNT NBR 5410, os resultados devem sempre ser conferidos por um profissional habilitado.
+                </p>
+            </div>
+            <img src="foto_rodrigo.png" alt="Rodrigo" class="profile-thumb" onerror="this.style.display='none'">
         </div>
     </div>
 
@@ -1016,7 +1061,9 @@
                 document.getElementById("btn-txt-calc-memory").innerText = t.btnCalcMemory;
                 document.getElementById("btn-txt-pdf").innerText = t.btnPdf;
                 document.getElementById("txt-modal-title").innerText = t.modalTitle;
-                document.getElementById("txt-disclaimer").innerText = t.disclaimer;
+                
+                document.querySelectorAll(".txt-disclaimer").forEach(el => el.innerText = t.disclaimer);
+
                 document.getElementById("txt-lang-label").innerText = this.lang === "pt" ? "EN" : "PT";
 
                 document.getElementById("opt-type-lighting").innerText = t.optTypeLighting;
