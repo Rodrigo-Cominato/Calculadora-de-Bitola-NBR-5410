@@ -13,10 +13,8 @@ This repository contains the source code for an educational cable sizing calcula
 
 ## Technologies
 
-- C++
-- WebAssembly
-- HTML
-- CSS
+- HTML5
+- CSS3
 - JavaScript
 
 > This project was developed exclusively for educational purposes.
