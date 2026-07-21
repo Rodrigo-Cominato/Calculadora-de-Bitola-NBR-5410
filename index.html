@@ -480,6 +480,10 @@
                 display: none !important; 
             }
 
+            .txt-disclaimer {
+                color: #000000 !important;
+            }
+
             /* --- PÁGINA 1: CALCULADORA --- */
             .print-page-1 {
                 display: flex !important;
@@ -518,6 +522,7 @@
                 margin-top: 10px;
                 padding: 10px 15px;
                 background: white !important;
+                color: #000000 !important;
             }
 
             /* --- PÁGINA 2: MEMÓRIA DE CÁLCULO E PARECER IA --- */
@@ -573,6 +578,7 @@
                 gap: 15px;
                 font-size: 0.8rem;
                 background: white !important;
+                color: #000000 !important;
             }
 
             .profile-thumb {
@@ -594,7 +600,7 @@
                 </svg>
                 <div>
                     <h1 id="txt-title">Dimensionamento NBR 5410</h1>
-                    <span style="font-size: 0.75rem; color: var(--text-secondary);" id="txt-subtitle">Calculadora Técnica Oficial</span>
+                    <span style="font-size: 0.75rem; color: var(--text-secondary);" id="txt-subtitle">Calculadora desenvolvida para fins estudantis</span>
                 </div>
             </div>
             <div class="controls">
@@ -840,7 +846,7 @@
             },
             tempFactors: {
                 PVC:  { 10: 1.22, 15: 1.17, 20: 1.12, 25: 1.06, 30: 1.00, 35: 0.94, 40: 0.87, 45: 0.79, 50: 0.71, 55: 0.61, 60: 0.50 },
-                XLPE: { 10: 1.15, 15: 1.12, 20: 1.08, 25: 1.04, 30: 1.00, 35: 0.96, 40: 0.91, 45: 0.87, 50: 0.82, 55: 0.76, 60: 0.71 }
+                XLPE: { 10: 1.15, 15: 1.12, 20: 1.08, 25: 1.04, 30: 1.00, 35: 0.96, 40: 0.91, 45: 0.82, 50: 0.82, 55: 0.76, 60: 0.71 }
             },
             groupingFactors: {
                 1: 1.00,
@@ -885,7 +891,7 @@
             pt: {
                 pageTitle: "Calculadora de Dimensionamento de Condutores NBR 5410",
                 title: "Dimensionamento NBR 5410",
-                subtitle: "Calculadora Técnica Oficial",
+                subtitle: "Calculadora desenvolvida para fins estudantis",
                 secInput: "Parâmetros do Circuito",
                 secResults: "Resultado do Dimensionamento",
                 lblCircuitType: "Tipo de Circuito",
@@ -952,13 +958,13 @@
                 step4Desc: "Calculada para a distância informada.",
                 step4Max: "Máximo:",
                 
-                // IA / Resumo Didático
-                aiTitle: "🤖 Resumo Didático para Leigos (IA Assimilator)",
+                // Resumo Didático
+                aiTitle: "Resumo Didático",
             },
             en: {
                 pageTitle: "NBR 5410 Conductor Sizing Calculator",
                 title: "NBR 5410 Wire Sizing",
-                subtitle: "Official Technical Calculator",
+                subtitle: "Calculator developed for educational purposes",
                 secInput: "Circuit Parameters",
                 secResults: "Sizing Results",
                 lblCircuitType: "Circuit Type",
@@ -1025,8 +1031,8 @@
                 step4Desc: "Calculated for the specified distance.",
                 step4Max: "Maximum:",
                 
-                // IA / Resumo Didático
-                aiTitle: "🤖 Beginner-Friendly Summary (AI Assimilator)"
+                // Resumo Didático
+                aiTitle: "Educational Summary"
             }
         };
 
