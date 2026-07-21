@@ -3,44 +3,44 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Calculadora de Dimensionamento de Condutores NBR 5410</title>
+    <title id="page-title">Calculadora de Dimensionamento de Condutores NBR 5410</title>
     <style>
         /* ==========================================================================
-           1. ESTILOS GERAIS E VARIÁVEIS DE TEMA (PALETA TERROSA)
+           1. ESTILOS GERAIS E VARIÁVEIS DE TEMA
            ========================================================================== */
         :root {
             --font-main: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             
             /* Dark Theme */
-            --bg-color: #1a120c;           /* Marrom muito escuro */
-            --panel-bg: #261b13;          /* Marrom café */
-            --panel-border: #3d2b1f;      /* Marrom médio */
-            --text-primary: #f5ebe0;      /* Bege claro */
-            --text-secondary: #d5bdaf;    /* Bege suave */
-            --accent-primary: #e07a5f;    /* Terracota */
-            --accent-hover: #f4a261;      /* Laranja suave */
-            --accent-success: #e9c46a;    /* Amarelo queimado / Ouro */
-            --accent-warning: #f4a261;    /* Laranja */
-            --accent-danger: #d62828;     /* Terracota intenso/Vermelho terroso */
-            --input-bg: #150e09;          /* Marrom profundo */
-            --input-border: #4a3525;      /* Marrom suave */
+            --bg-color: #1a120c;
+            --panel-bg: #261b13;
+            --panel-border: #3d2b1f;
+            --text-primary: #f5ebe0;
+            --text-secondary: #d5bdaf;
+            --accent-primary: #e07a5f;
+            --accent-hover: #f4a261;
+            --accent-success: #e9c46a;
+            --accent-warning: #f4a261;
+            --accent-danger: #d62828;
+            --input-bg: #150e09;
+            --input-border: #4a3525;
             --shadow-color: rgba(0, 0, 0, 0.5);
         }
 
         [data-theme="light"] {
             /* Light Theme */
-            --bg-color: #f8f1e7;           /* Bege creme claro */
-            --panel-bg: #ffffff;          /* Branco puro */
-            --panel-border: #e6ccb2;      /* Bege médio */
-            --text-primary: #3d2b1f;      /* Marrom escuro */
-            --text-secondary: #7f5539;    /* Marrom médio */
-            --accent-primary: #c8553d;    /* Terracota clássico */
-            --accent-hover: #b2432b;      /* Terracota escuro */
-            --accent-success: #d4a373;    /* Bege dourado */
-            --accent-warning: #f4a261;    /* Laranja */
-            --accent-danger: #9e2a2b;     /* Marrom avermelhado */
-            --input-bg: #fefae0;          /* Bege amarelado claro */
-            --input-border: #dde5b6;      /* Bege oliva suave */
+            --bg-color: #f8f1e7;
+            --panel-bg: #ffffff;
+            --panel-border: #e6ccb2;
+            --text-primary: #3d2b1f;
+            --text-secondary: #7f5539;
+            --accent-primary: #c8553d;
+            --accent-hover: #b2432b;
+            --accent-success: #d4a373;
+            --accent-warning: #f4a261;
+            --accent-danger: #9e2a2b;
+            --input-bg: #fefae0;
+            --input-border: #dde5b6;
             --shadow-color: rgba(61, 43, 31, 0.12);
         }
 
@@ -63,7 +63,7 @@
         }
 
         /* ==========================================================================
-           2. HEADER E CONTROLES DE INTERFACE
+           2. HEADER E CONTROLES
            ========================================================================== */
         header {
             display: flex;
@@ -121,7 +121,7 @@
         }
 
         /* ==========================================================================
-           3. LAYOUT PRINCIPAL (PAINÉIS DE ENTRADA E RESULTADOS)
+           3. LAYOUT PRINCIPAL
            ========================================================================== */
         main {
             display: grid;
@@ -410,26 +410,90 @@
         }
 
         /* ==========================================================================
-           7. RODAPÉ E AVISO LEGAL
+           7. RODAPÉ
            ========================================================================== */
         footer {
             margin-top: 20px;
             background-color: var(--panel-bg);
             border: 1px solid var(--panel-border);
-            padding: 15px;
+            padding: 15px 20px;
             border-radius: 8px;
-            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
             font-size: 0.8rem;
             color: var(--text-secondary);
         }
 
+        .footer-content {
+            flex: 1;
+            text-align: center;
+        }
+
+        .profile-thumb {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--accent-primary);
+        }
+
+        /* ==========================================================================
+           8. ESTILOS DE IMPRESSÃO E PDF
+           ========================================================================== */
         @media print {
-            body { background: white; color: black; padding: 0; }
-            header, .controls, .action-btns, footer { display: none !important; }
-            main { display: block; }
-            .panel { border: none; box-shadow: none; padding: 0; }
-            .modal-overlay { position: static; opacity: 1; pointer-events: auto; background: none; }
-            .modal-content { max-width: 100%; border: none; box-shadow: none; }
+            body { 
+                background: white !important; 
+                color: black !important; 
+                padding: 10px;
+            }
+            header .controls, .action-btns { 
+                display: none !important; 
+            }
+            header {
+                box-shadow: none;
+                border: 1px solid #ccc;
+            }
+            .panel { 
+                border: 1px solid #ccc; 
+                box-shadow: none; 
+                margin-bottom: 15px;
+            }
+            
+            /* Forçar visibilidade da Memória de Cálculo centralizada na Página 2 */
+            .modal-overlay { 
+                position: static !important; 
+                opacity: 1 !important; 
+                pointer-events: auto !important; 
+                background: none !important;
+                page-break-before: always;
+                display: flex !important;
+                justify-content: center !important;
+                align-items: center !important;
+                min-height: 80vh;
+            }
+            
+            .modal-content { 
+                max-width: 100% !important; 
+                width: 100% !important;
+                border: 1px solid #ccc !important; 
+                box-shadow: none !important;
+                margin: 0 auto !important;
+            }
+
+            .modal-header .btn-ctrl {
+                display: none !important;
+            }
+
+            footer {
+                border: 1px solid #ccc;
+                page-break-inside: avoid;
+            }
+
+            .profile-thumb {
+                border-color: #333;
+            }
         }
     </style>
 </head>
@@ -640,7 +704,7 @@
         </section>
     </main>
 
-    <!-- MODAL DE MEMÓRIA DE CÁLCULO -->
+    <!-- MODAL DE MEMÓRIA DE CÁLCULO (INCLUÍDO NO PDF) -->
     <div class="modal-overlay" id="calc-modal">
         <div class="modal-content">
             <div class="modal-header">
@@ -653,11 +717,14 @@
         </div>
     </div>
 
-    <!-- RODAPÉ E AVISO LEGAL -->
+    <!-- RODAPÉ -->
     <footer>
-        <p id="txt-disclaimer">
-            Esta calculadora foi desenvolvida exclusivamente para fins educacionais. Apesar de seguir os critérios da ABNT NBR 5410, os resultados devem sempre ser conferidos por um profissional habilitado.
-        </p>
+        <div class="footer-content">
+            <p id="txt-disclaimer">
+                Esta calculadora foi desenvolvida exclusivamente para fins educacionais. Apesar de seguir os critérios da ABNT NBR 5410, os resultados devem sempre ser conferidos por um profissional habilitado.
+            </p>
+        </div>
+        <img src="foto_rodrigo.PNG" alt="Rodrigo" class="profile-thumb" onerror="this.style.display='none'">
     </footer>
 
     <!-- LÓGICA DE PROCESSAMENTO -->
@@ -718,6 +785,7 @@
 
         const TRANSLATIONS = {
             pt: {
+                pageTitle: "Calculadora de Dimensionamento de Condutores NBR 5410",
                 title: "Dimensionamento NBR 5410",
                 subtitle: "Calculadora Técnica Oficial",
                 secInput: "Parâmetros do Circuito",
@@ -752,7 +820,7 @@
                 badgeOk: "OK",
                 badgeAlert: "ALERTA",
                 
-                // Opções dos selects
+                // Selects
                 optTypeLighting: "Iluminação",
                 optTypeSockets: "Tomadas (TUG/TUE)",
                 optTypeMotor: "Motores",
@@ -787,6 +855,7 @@
                 step4Max: "Máximo:"
             },
             en: {
+                pageTitle: "NBR 5410 Conductor Sizing Calculator",
                 title: "NBR 5410 Wire Sizing",
                 subtitle: "Official Technical Calculator",
                 secInput: "Circuit Parameters",
@@ -821,7 +890,7 @@
                 badgeOk: "OK",
                 badgeAlert: "WARNING",
 
-                // Select Options
+                // Selects
                 optTypeLighting: "Lighting",
                 optTypeSockets: "Sockets (General/Specific)",
                 optTypeMotor: "Motors",
@@ -895,7 +964,7 @@
             updateLanguageDOM() {
                 const t = TRANSLATIONS[this.lang];
                 
-                // Títulos e Rótulos
+                document.getElementById("page-title").innerText = t.pageTitle;
                 document.getElementById("txt-title").innerText = t.title;
                 document.getElementById("txt-subtitle").innerText = t.subtitle;
                 document.getElementById("txt-sec-input").innerText = t.secInput;
@@ -921,7 +990,6 @@
                 document.getElementById("txt-disclaimer").innerText = t.disclaimer;
                 document.getElementById("txt-lang-label").innerText = this.lang === "pt" ? "EN" : "PT";
 
-                // Atualizar opções dos Selects
                 document.getElementById("opt-type-lighting").innerText = t.optTypeLighting;
                 document.getElementById("opt-type-sockets").innerText = t.optTypeSockets;
                 document.getElementById("opt-type-motor").innerText = t.optTypeMotor;
@@ -943,7 +1011,6 @@
                 document.getElementById("opt-cond-2").innerText = t.optCond2;
                 document.getElementById("opt-cond-3").innerText = t.optCond3;
 
-                // Atualizar texto do botão de tema
                 this.updateThemeButtonText();
             }
 
@@ -962,7 +1029,6 @@
                 const length = parseFloat(document.getElementById("in-length").value) || 0;
                 const maxVd = parseFloat(document.getElementById("in-max-vd").value) || 4.0;
 
-                // 1. Corrente de Projeto (Ib)
                 let ib = 0;
                 if (pUnit === "A") {
                     ib = pVal;
@@ -979,14 +1045,12 @@
                     }
                 }
 
-                // 2. Fatores de Correção
                 const fTemp = (NBR5410_DATA.tempFactors[matIso] && NBR5410_DATA.tempFactors[matIso][temp]) || 1.0;
                 const fGroup = NBR5410_DATA.groupingFactors[grouping] || 1.0;
                 const fct = fTemp * fGroup;
 
                 const ibReq = ib / fct;
 
-                // 3. Tabela de Capacidade
                 let tableCap = null;
                 try {
                     tableCap = NBR5410_DATA.capacities[matCond][matIso]["B1"][loadedCond];
@@ -1016,7 +1080,6 @@
                     izReal = izBase * fct;
                 }
 
-                // 4. Queda de Tensão (ΔU)
                 const rho = NBR5410_DATA.resistivity[matCond];
                 let vdVolts = 0;
                 let vdPercent = 0;
@@ -1054,6 +1117,7 @@
                 };
 
                 this.renderResults();
+                this.updateModalContent(); // Atualiza os passos do modal para estar pronto na impressão
             }
 
             renderResults() {
@@ -1080,18 +1144,12 @@
                 }
 
                 this.renderCharts();
-
-                // Caso o modal esteja aberto no momento da troca de idioma, atualiza o conteúdo dele também
-                if (document.getElementById("calc-modal").classList.contains("active")) {
-                    this.openModal();
-                }
             }
 
             renderCharts() {
                 const r = this.lastResult;
                 if (!r) return;
 
-                // --- 1. Gráfico Ocupação Térmica (Gauge Circular) ---
                 const occ = Math.min(100, Math.max(0, r.thermalOccupancy));
                 const strokeDash = (occ * 283) / 100;
                 const gaugeSvg = document.getElementById("svg-gauge");
@@ -1102,7 +1160,6 @@
                     <text x="60" y="65" text-anchor="middle" fill="var(--text-primary)" font-weight="700" font-size="16">${occ.toFixed(0)}%</text>
                 `;
 
-                // --- 2. Gráfico Queda de Tensão Relativa (Barra Vertical) ---
                 const relVd = Math.min(100, (r.vdPercent / r.maxVd) * 100);
                 const barHeight = (relVd * 70) / 100;
                 const barY = 90 - barHeight;
@@ -1117,7 +1174,7 @@
                 `;
             }
 
-            openModal() {
+            updateModalContent() {
                 const r = this.lastResult;
                 if (!r) return;
                 const t = TRANSLATIONS[this.lang];
@@ -1145,7 +1202,10 @@
                         <div class="formula-box">ΔU = ${r.vdVolts.toFixed(2)} V (${r.vdPercent.toFixed(2)}%) | ${t.step4Max} ${r.maxVd}%</div>
                     </div>
                 `;
+            }
 
+            openModal() {
+                this.updateModalContent();
                 document.getElementById("calc-modal").classList.add("active");
             }
 
@@ -1154,6 +1214,7 @@
             }
 
             exportPDF() {
+                this.updateModalContent();
                 window.print();
             }
         }
